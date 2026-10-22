@@ -1,7 +1,7 @@
 package es.safareyes.smartchef;
 
-import es.safareyes.smartchef.modelos.Ingredientes;
-import es.safareyes.smartchef.repositorios.IIngredientesRepository;
+import es.safareyes.smartchef.entity.Ingredientes;
+import es.safareyes.smartchef.repository.IIngredientesRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;

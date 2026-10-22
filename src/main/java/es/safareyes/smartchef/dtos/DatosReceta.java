@@ -1,6 +1,6 @@
 package es.safareyes.smartchef.dtos;
 
-import es.safareyes.smartchef.modelos.ERecetaDificultad;
+import es.safareyes.smartchef.entity.ERecetaDificultad;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

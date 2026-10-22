@@ -1,6 +1,6 @@
 package es.safareyes.smartchef.dtos;
 
-import es.safareyes.smartchef.modelos.EIngredientesTipoCantidad;
+import es.safareyes.smartchef.entity.EIngredientesTipoCantidad;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
