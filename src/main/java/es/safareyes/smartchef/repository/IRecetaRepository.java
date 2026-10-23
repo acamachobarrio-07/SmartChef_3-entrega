@@ -55,6 +55,28 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
                      es.safareyes.smartchef.entity.EPreferenciasTipo.SINGLUTEN
               WHERE ir.receta = r AND a.id IS NULL
           ))
+      
+      AND (
+          :economico IS NULL
+          OR :economico = false
+          OR (
+              r.raciones > 0
+              AND (
+                  SELECT SUM(
+                      CASE
+                          WHEN i.eIngredientesTipoCantidad =
+                               es.safareyes.smartchef.entity.EIngredientesTipoCantidad.UNIDADES
+                          THEN ir.cantidad * i.precio
+                          ELSE (ir.cantidad * i.precio) / 100
+                      END
+                  )
+                  FROM IngredientesReceta ir
+                  JOIN ir.ingrediente i
+                  WHERE ir.receta = r
+              ) <= r.raciones * 2.50
+          )
+      )
+      
 
     ORDER BY r.nombre ASC, r.id ASC
     """)
@@ -63,6 +85,7 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             @Param("dificultad") ERecetaDificultad dificultad,
             @Param("vegetariano") Boolean vegetariano,
             @Param("sinGluten") Boolean sinGluten,
+            @Param("economico") Boolean economico,
             Pageable pageable
     );
 

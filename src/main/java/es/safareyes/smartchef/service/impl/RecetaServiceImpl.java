@@ -25,6 +25,7 @@ public class RecetaServiceImpl implements RecetaService {
     private final IRecetaRepository recetaRepository;
     private final RecetaMapper recetaMapper;
 
+
     @Override
     public Page<RecetaResponse> buscarRecetas(RecetasRequest filtros) {
 
@@ -33,13 +34,23 @@ public class RecetaServiceImpl implements RecetaService {
 
         Pageable pageable = PageRequest.of(pagina, tamano);
 
+        Integer tiempoMax = filtros.tiempoMax();
+
+        if (Boolean.TRUE.equals(filtros.rapido())) {
+            tiempoMax = tiempoMax == null
+                    ? 30
+                    : Math.min(tiempoMax, 30);
+        }
+
         return recetaRepository.buscarConFiltros(
-                filtros.tiempoMax(),
+                tiempoMax,
                 filtros.dificultad(),
                 filtros.vegetariano(),
                 filtros.sinGluten(),
+                filtros.economico(),
                 pageable
         ).map(recetaMapper::aResponseDesdeFiltro);
     }
+
 
 }

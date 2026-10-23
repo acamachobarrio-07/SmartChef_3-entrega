@@ -23,12 +23,14 @@ public class TestRecetasFiltros {
     @Test
     void buscarporFiltros() {
 
+
         Page<DatosFiltradoReceta> resultados =
                 repository.buscarConFiltros(
                         30,
                         ERecetaDificultad.FACIL,
                         true,
                         true,
+                        null,
                         PageRequest.of(0, 10)
                 );
 
