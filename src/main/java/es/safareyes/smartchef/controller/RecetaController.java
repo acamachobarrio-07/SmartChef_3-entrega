@@ -11,17 +11,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import java.net.URI;
 
 @Tag(name = "Recetas", description = "Catálogo de recetas de SmartChef")
 @RestController
 @RequestMapping("/api/v1/recetas")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class RecetaController {
 
     private final RecetaService recetaService;
@@ -47,4 +50,39 @@ public class RecetaController {
 
         return ResponseEntity.ok(recetaService.buscarRecetas(filtros));
     }
+
+
+    @Operation(summary = "Crear una nueva receta con ingredientes y pasos")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Receta creada correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos de la receta no válidos",
+                    content = @Content(
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "No se ha encontrado uno de los ingredientes"
+            )
+    })
+    @PostMapping("/crear")
+    public ResponseEntity<RecetaResponse> crearReceta(
+            @Valid @RequestBody CrearRecetaRequest request) {
+
+        RecetaResponse recetaCreada = recetaService.crearReceta(request);
+
+        URI ubicacion = URI.create(
+                "/api/v1/recetas" + recetaCreada.id()
+        );
+
+        return ResponseEntity
+                .created(ubicacion)
+                .body(recetaCreada);
+    }
+
 }
