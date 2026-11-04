@@ -1,8 +1,11 @@
+
 package es.safareyes.smartchef.controller;
 
+import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
-import es.safareyes.smartchef.service.RecetaService;
+import es.safareyes.smartchef.service.IRecetaService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,15 +13,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+
 import java.net.URI;
 
 @Tag(name = "Recetas", description = "Catálogo de recetas de SmartChef")
@@ -27,8 +31,9 @@ import java.net.URI;
 @AllArgsConstructor
 public class RecetaController {
 
-    private final RecetaService recetaService;
+    private IRecetaService recetaService;
 
+    //GET - Consultar recetas con filtros
     @Operation(summary = "Buscar recetas con filtros y paginación")
     @ApiResponses({
             @ApiResponse(
@@ -51,7 +56,7 @@ public class RecetaController {
         return ResponseEntity.ok(recetaService.buscarRecetas(filtros));
     }
 
-
+    // POST - Crear una receta
     @Operation(summary = "Crear una nueva receta con ingredientes y pasos")
     @ApiResponses({
             @ApiResponse(
@@ -70,19 +75,19 @@ public class RecetaController {
                     description = "No se ha encontrado uno de los ingredientes"
             )
     })
-    @PostMapping("/crear")
+    @PostMapping({"", "/crear"})
     public ResponseEntity<RecetaResponse> crearReceta(
-            @Valid @RequestBody CrearRecetaRequest request) {
+            @Valid @RequestBody CrearRecetaRequest json) {
 
-        RecetaResponse recetaCreada = recetaService.crearReceta(request);
+        RecetaResponse recetaCreada = recetaService.crearReceta(json);
 
         URI ubicacion = URI.create(
-                "/api/v1/recetas" + recetaCreada.id()
+                "/api/v1/recetas/" + recetaCreada.id()
         );
 
         return ResponseEntity
                 .created(ubicacion)
                 .body(recetaCreada);
     }
-
 }
+

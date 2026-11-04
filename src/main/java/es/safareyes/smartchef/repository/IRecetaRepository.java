@@ -16,10 +16,10 @@ import java.util.List;
 @Repository
 public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
 
+    // Comprobar si ya existe una receta con ese nombre
+    Boolean existsByNombreIgnoreCase(String nombre);
+
     //Catálogo con filtros
-
-
-
     @Query("""
     SELECT new es.safareyes.smartchef.dtos.DatosFiltradoReceta(
         r.id,

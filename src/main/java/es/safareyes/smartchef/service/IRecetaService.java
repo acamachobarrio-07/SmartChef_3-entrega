@@ -1,4 +1,3 @@
-
 package es.safareyes.smartchef.service;
 
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
@@ -6,12 +5,12 @@ import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import org.springframework.data.domain.Page;
 
-public interface RecetaService {
+public interface IRecetaService {
 
-    //buscar recetas por filtros
+    // Consultar recetas con filtros
     Page<RecetaResponse> buscarRecetas(RecetasRequest filtros);
 
-    //crear receta
-    RecetaResponse crearReceta(CrearRecetaRequest request);
+    // Crear una receta
+    RecetaResponse crearReceta(CrearRecetaRequest dto);
 
 }

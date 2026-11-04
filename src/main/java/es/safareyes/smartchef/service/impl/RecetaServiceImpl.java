@@ -6,24 +6,18 @@ import es.safareyes.smartchef.dtos.request.PasoRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import es.safareyes.smartchef.entity.*;
+import es.safareyes.smartchef.exception.ElementoDuplicado;
+import es.safareyes.smartchef.exception.RelacionNoEncontrada;
+import es.safareyes.smartchef.exception.ReglaNegocioException;
 import es.safareyes.smartchef.mapper.RecetaMapper;
-import es.safareyes.smartchef.repository.IIngredientesRecetaRepository;
-import es.safareyes.smartchef.repository.IIngredientesRepository;
-import es.safareyes.smartchef.repository.IPasoRepository;
-import es.safareyes.smartchef.repository.IRecetaRepository;
-import es.safareyes.smartchef.service.RecetaService;
-
+import es.safareyes.smartchef.repository.*;
+import es.safareyes.smartchef.service.IRecetaService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -33,17 +27,16 @@ import java.util.Set;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
-public class RecetaServiceImpl implements RecetaService {
+public class RecetaServiceImpl implements IRecetaService {
 
-    private  IRecetaRepository recetaRepository;
-    private  RecetaMapper recetaMapper;
-    private  IIngredientesRepository ingredientesRepository;
-    private  IIngredientesRecetaRepository ingredientesRecetaRepository;
-    private  IPasoRepository pasoRepository;
+    private IRecetaRepository recetaRepository;
+    private RecetaMapper recetaMapper;
+    private IIngredientesRepository ingredientesRepository;
+    private IIngredientesRecetaRepository ingredientesRecetaRepository;
+    private IPasoRepository pasoRepository;
 
-
+    // GET - Buscar recetas con filtros
     @Override
     public Page<RecetaResponse> buscarRecetas(RecetasRequest filtros) {
 
@@ -70,12 +63,19 @@ public class RecetaServiceImpl implements RecetaService {
         ).map(recetaMapper::aResponseDesdeFiltro);
     }
 
-
+    // POST - Crear una receta
     @Override
     @Transactional
     public RecetaResponse crearReceta(CrearRecetaRequest json) {
 
-        // 1. Comprobar que los pasos estén numerados sin huecos
+        // 1. Comprobar que el nombre no esté repetido
+        if (recetaRepository.existsByNombreIgnoreCase(json.nombre())) {
+            throw new ElementoDuplicado(
+                    "Ya existe una receta con el nombre: " + json.nombre()
+            );
+        }
+
+        // 2. Comprobar que los pasos estén numerados sin huecos
         List<Integer> numeros = json.pasos().stream()
                 .map(PasoRecetaRequest::numero)
                 .sorted()
@@ -83,43 +83,45 @@ public class RecetaServiceImpl implements RecetaService {
 
         for (int i = 0; i < numeros.size(); i++) {
             if (numeros.get(i) != i + 1) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
+                throw new ReglaNegocioException(
                         "Los pasos deben estar numerados desde 1 y sin huecos"
                 );
             }
         }
 
-        // 2. Buscar los ingredientes y calcular las calorías
+        // 3. Buscar ingredientes y calcular calorías
         Set<Integer> idsIngredientes = new HashSet<>();
         List<IngredientesReceta> relaciones = new ArrayList<>();
         BigDecimal caloriasTotales = BigDecimal.ZERO;
 
         for (IngredienteRecetaRequest item : json.ingredientes()) {
 
+            // Evitar ingredientes repetidos
             if (!idsIngredientes.add(item.idIngrediente())) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "No se puede repetir un ingrediente"
+                throw new ReglaNegocioException(
+                        "No se puede repetir un ingrediente en la receta"
                 );
             }
 
+            // Comprobar que el ingrediente existe
             Ingredientes ingrediente = ingredientesRepository
                     .findById(item.idIngrediente())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "No existe el ingrediente con ID " + item.idIngrediente()
+                    .orElseThrow(() -> new RelacionNoEncontrada(
+                            "No existe el ingrediente con ID: "
+                                    + item.idIngrediente()
                     ));
 
+            // Comprobar los datos del ingrediente
             if (ingrediente.getCalorias() == null
                     || ingrediente.getEIngredientesTipoCantidad() == null) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
+
+                throw new ReglaNegocioException(
                         "El ingrediente no tiene datos suficientes: "
                                 + ingrediente.getNombre()
                 );
             }
 
+            // Calcular calorías del ingrediente
             BigDecimal calorias = BigDecimal
                     .valueOf(ingrediente.getCalorias())
                     .multiply(item.cantidad());
@@ -137,6 +139,7 @@ public class RecetaServiceImpl implements RecetaService {
 
             caloriasTotales = caloriasTotales.add(calorias);
 
+            // Crear relación ingrediente-receta
             IngredientesReceta relacion = new IngredientesReceta();
             relacion.setIngrediente(ingrediente);
             relacion.setCantidad(item.cantidad());
@@ -144,15 +147,10 @@ public class RecetaServiceImpl implements RecetaService {
             relaciones.add(relacion);
         }
 
-        // 3. Crear y guardar la receta
-        Receta receta = new Receta();
+        // 4. Convertir DTO a entidad mediante MapStruct
+        Receta receta = recetaMapper.toEntity(json);
 
-        receta.setNombre(json.nombre());
-        receta.setDescripcion(json.descripcion());
-        receta.setRaciones(json.raciones());
-        receta.setTiempo(json.tiempo());
-        receta.setERecetaDificultad(json.dificultad());
-
+        // Calcular calorías por ración
         int caloriasPorRacion = caloriasTotales
                 .divide(
                         BigDecimal.valueOf(json.raciones()),
@@ -163,16 +161,17 @@ public class RecetaServiceImpl implements RecetaService {
 
         receta.setCalorias(caloriasPorRacion);
 
+        // Guardar receta
         Receta recetaGuardada = recetaRepository.save(receta);
 
-        // 4. Guardar ingredientes y cantidades
+        // 5. Guardar ingredientes y cantidades
         for (IngredientesReceta relacion : relaciones) {
             relacion.setReceta(recetaGuardada);
         }
 
         ingredientesRecetaRepository.saveAll(relaciones);
 
-        // 5. Guardar los pasos de preparación
+        // 6. Guardar los pasos
         List<Paso> pasos = new ArrayList<>();
 
         for (PasoRecetaRequest item : json.pasos()) {
@@ -187,17 +186,7 @@ public class RecetaServiceImpl implements RecetaService {
 
         pasoRepository.saveAll(pasos);
 
-        // 6. Devolver los datos de la receta creada
-        return new RecetaResponse(
-                recetaGuardada.getId(),
-                recetaGuardada.getNombre(),
-                recetaGuardada.getDescripcion(),
-                recetaGuardada.getTiempo(),
-                recetaGuardada.getRaciones(),
-                recetaGuardada.getCalorias(),
-                recetaGuardada.getERecetaDificultad()
-        );
+        // 7. Convertir entidad a DTO de respuesta
+        return recetaMapper.aResponse(recetaGuardada);
     }
-
-
 }
