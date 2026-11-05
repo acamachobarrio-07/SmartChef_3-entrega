@@ -2,6 +2,7 @@ package es.safareyes.smartchef.service;
 
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
+import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import org.springframework.data.domain.Page;
 
@@ -12,5 +13,10 @@ public interface IRecetaService {
 
     // Crear una receta
     RecetaResponse crearReceta(CrearRecetaRequest dto);
+
+
+    // Consultar el detalle de una receta por ID
+    RecetaDetalleResponse obtenerRecetaPorId(Integer id);
+
 
 }

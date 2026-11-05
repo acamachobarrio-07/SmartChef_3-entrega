@@ -1,21 +1,26 @@
-package es.safareyes.smartchef.exception;
+package es.safareyes.smartchef.controller;
 
+import es.safareyes.smartchef.exception.ElementoDuplicado;
+import es.safareyes.smartchef.exception.ReglaNegocioException;
+import es.safareyes.smartchef.exception.RelacionNoEncontrada;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class ManejadorGlobalErrores {
+@Slf4j
+public class ErrorGlobalController {
 
     // Error 400 - Validaciones de los DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail errorValidacion(
-            MethodArgumentNotValidException ex) {
+    public ProblemDetail errorValidacion(MethodArgumentNotValidException ex) {
 
         Map<String, String> errores = new LinkedHashMap<>();
 
@@ -77,5 +82,24 @@ public class ManejadorGlobalErrores {
 
         return problema;
     }
+
+    // 400 - Error parámetro no valido
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail errorTipoParametro(
+            MethodArgumentTypeMismatchException ex) {
+
+        ProblemDetail problema =
+                ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+
+        problema.setTitle("Parámetro no válido");
+
+        problema.setDetail(
+                "El parámetro '" + ex.getName()
+                        + "' tiene un formato incorrecto"
+        );
+
+        return problema;
+    }
+
 }
 
