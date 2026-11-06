@@ -138,6 +138,15 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
     ORDER BY (COUNT(DISTINCT c.id) + COUNT(DISTINCT col.id)) DESC
     """)
     List<DatosRecetasPopulares> findTop5ByUsuario(@Param("idUsuario") Integer idUsuario);
+
+    // Buscar recetas con sus ingredientes
+    @Query("""
+            SELECT DISTINCT r
+            FROM Receta r
+            LEFT JOIN FETCH r.ingredientesReceta ir
+            LEFT JOIN FETCH ir.ingrediente
+            """)
+    List<Receta> buscarRecetasConIngredientes();
 }
 
     //@Query("""

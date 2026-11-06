@@ -1,10 +1,12 @@
 package es.safareyes.smartchef.service.impl;
 
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
-import es.safareyes.smartchef.dtos.request.IngredienteRecetaRequest;
-import es.safareyes.smartchef.dtos.request.PasoRecetaRequest;
-import es.safareyes.smartchef.dtos.request.RecetasRequest;
+import es.safareyes.smartchef.dtos.request.*;
+import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
+import es.safareyes.smartchef.dtos.response.IngredienteResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
+import es.safareyes.smartchef.repository.IUsuarioRepository;
+import es.safareyes.smartchef.repository.IDespensaRepository;
+import es.safareyes.smartchef.mapper.IngredienteMapper;
 import es.safareyes.smartchef.entity.*;
 import es.safareyes.smartchef.exception.ElementoDuplicado;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
@@ -20,10 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +35,9 @@ public class RecetaServiceImpl implements IRecetaService {
     private IIngredientesRepository ingredientesRepository;
     private IIngredientesRecetaRepository ingredientesRecetaRepository;
     private IPasoRepository pasoRepository;
+    private IUsuarioRepository usuarioRepository;
+    private IDespensaRepository despensaRepository;
+    private IngredienteMapper ingredienteMapper;
 
     // GET - Buscar recetas con filtros
     @Override
@@ -189,4 +192,114 @@ public class RecetaServiceImpl implements IRecetaService {
         // 7. Convertir entidad a DTO de respuesta
         return recetaMapper.aResponse(recetaGuardada);
     }
+
+
+    @Override
+    public List<BuscarPorIngredientesResponse> buscarPorIngredientes(
+            BuscarPorIngredientesRequest datos) {
+
+        // 1. Comprobar cómo queremos buscar
+        if (datos.idUsuario() != null && datos.idsIngredientes() != null) {
+            throw new ReglaNegocioException(
+                    "Debes indicar una lista de ingredientes o un usuario, no ambos"
+            );
+        }
+
+        if (datos.idUsuario() == null &&
+                (datos.idsIngredientes() == null || datos.idsIngredientes().isEmpty())) {
+            throw new ReglaNegocioException(
+                    "Debes indicar ingredientes o un usuario"
+            );
+        }
+
+        // 2. Obtener los ingredientes disponibles
+        Set<Integer> disponibles = new HashSet<>();
+
+        if (datos.idUsuario() != null) {
+
+            if (!usuarioRepository.existsById(datos.idUsuario())) {
+                throw new RelacionNoEncontrada(
+                        "No existe el usuario con ID: " + datos.idUsuario()
+                );
+            }
+
+            // Solo ingredientes con cantidad positiva y no caducados
+            List<Despensa> despensa = despensaRepository.buscarIngredientesDisponibles(
+                    datos.idUsuario(),
+                    LocalDate.now()
+            );
+
+            for (Despensa item : despensa) {
+                disponibles.add(item.getIngrediente().getId());
+            }
+
+        } else {
+            disponibles.addAll(datos.idsIngredientes());
+        }
+
+        // 3. Obtener las recetas y sus ingredientes
+        List<Receta> recetas = recetaRepository.buscarRecetasConIngredientes();
+
+        List<BuscarPorIngredientesResponse> resultados = new ArrayList<>();
+
+        for (Receta receta : recetas) {
+
+            List<IngredientesReceta> ingredientes = receta.getIngredientesReceta();
+
+            int total = ingredientes.size();
+
+            // Evitar recetas sin ingredientes
+            if (total == 0) {
+                continue;
+            }
+
+            int coincidentes = 0;
+            List<IngredienteResponse> faltantes = new ArrayList<>();
+
+            // 4. Comprobar qué ingredientes tenemos
+            for (IngredientesReceta ir : ingredientes) {
+
+                Ingredientes ingrediente = ir.getIngrediente();
+
+                if (disponibles.contains(ingrediente.getId())) {
+                    coincidentes++;
+                } else {
+                    faltantes.add(ingredienteMapper.toDto(ingrediente));
+                }
+            }
+
+            // 5. RN-04: necesitamos MÁS del 50 %
+            if (coincidentes * 2 <= total) {
+                continue;
+            }
+
+            // 6. Calcular porcentaje de coincidencia
+            BigDecimal porcentaje = BigDecimal.valueOf(coincidentes)
+                    .multiply(BigDecimal.valueOf(100))
+                    .divide(
+                            BigDecimal.valueOf(total),
+                            2,
+                            RoundingMode.HALF_UP
+                    );
+
+            // 7. Construir la respuesta
+            resultados.add(new BuscarPorIngredientesResponse(
+                    recetaMapper.aResponse(receta),
+                    coincidentes,
+                    total,
+                    porcentaje,
+                    faltantes
+            ));
+        }
+
+        // 8. Ordenar de mayor a menor coincidencia
+        resultados.sort(
+                Comparator.comparing(
+                        BuscarPorIngredientesResponse::porcentajeCoincidencia
+                ).reversed()
+        );
+
+        return resultados;
+    }
+
 }

@@ -1,8 +1,10 @@
 
 package es.safareyes.smartchef.controller;
 
+import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
+import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import es.safareyes.smartchef.service.IRecetaService;
 
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "Recetas", description = "Catálogo de recetas de SmartChef")
 @RestController
@@ -88,6 +91,17 @@ public class RecetaController {
         return ResponseEntity
                 .created(ubicacion)
                 .body(recetaCreada);
+    }
+
+    @Operation(
+            summary = "Buscar recetas por ingredientes",
+            description = "Recomienda recetas según los ingredientes disponibles, cumpliendo la RN-04"
+    )
+    @PostMapping("/buscar-por-ingredientes")
+    public ResponseEntity<List<BuscarPorIngredientesResponse>> buscarPorIngredientes(
+            @Valid @RequestBody BuscarPorIngredientesRequest datos) {
+
+        return ResponseEntity.ok(recetaService.buscarPorIngredientes(datos));
     }
 }
 
