@@ -2,7 +2,11 @@ package es.safareyes.smartchef.mapper;
 
 import es.safareyes.smartchef.dtos.DatosFiltradoReceta;
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.response.IngredienteRecetaResponse;
+import es.safareyes.smartchef.dtos.response.PasoRecetaResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
+import es.safareyes.smartchef.entity.IngredientesReceta;
+import es.safareyes.smartchef.entity.Paso;
 import es.safareyes.smartchef.entity.Receta;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,6 +39,23 @@ public interface RecetaMapper {
     @Mapping(target = "fotos", ignore = true)
     @Mapping(target = "colecciones", ignore = true)
     Receta toEntity(CrearRecetaRequest dto);
+
+
+    // Convertir los ingredientes de una receta a DTO
+    @Mapping(target = "idIngrediente", source = "ingrediente.id")
+    @Mapping(target = "nombre", source = "ingrediente.nombre")
+    @Mapping(target = "tipoCantidad", source = "ingrediente.EIngredientesTipoCantidad")
+    IngredienteRecetaResponse toIngredienteDto(IngredientesReceta ingredienteReceta);
+
+    List<IngredienteRecetaResponse> toIngredientesDto(
+            List<IngredientesReceta> ingredientes
+    );
+
+    // Convertir los pasos de una receta a DTO
+    PasoRecetaResponse toPasoDto(Paso paso);
+
+    List<PasoRecetaResponse> toPasosDto(List<Paso> pasos);
+
 
 }
 

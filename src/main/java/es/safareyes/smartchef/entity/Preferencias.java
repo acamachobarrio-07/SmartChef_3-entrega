@@ -14,10 +14,7 @@ import java.util.Set;
 //lombok genera getters, setters, constructor y toString
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class Preferencias {
 
     //atributos

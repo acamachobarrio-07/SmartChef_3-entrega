@@ -1,13 +1,12 @@
-
 package es.safareyes.smartchef.controller;
 
 import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
+import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import es.safareyes.smartchef.service.IRecetaService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,10 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ProblemDetail;
@@ -36,7 +33,7 @@ public class RecetaController {
 
     private IRecetaService recetaService;
 
-    //GET - Consultar recetas con filtros
+    // GET - Consultar recetas con filtros
     @Operation(summary = "Buscar recetas con filtros y paginación")
     @ApiResponses({
             @ApiResponse(
@@ -93,6 +90,7 @@ public class RecetaController {
                 .body(recetaCreada);
     }
 
+    // POST - Buscar recetas por ingredientes (RN-04)
     @Operation(
             summary = "Buscar recetas por ingredientes",
             description = "Recomienda recetas según los ingredientes disponibles, cumpliendo la RN-04"
@@ -103,5 +101,20 @@ public class RecetaController {
 
         return ResponseEntity.ok(recetaService.buscarPorIngredientes(datos));
     }
-}
 
+    // GET - Consultar el detalle de una receta
+    @Operation(
+            summary = "Obtener receta por ID",
+            description = "Devuelve los datos de una receta con sus ingredientes, pasos y valores calculados"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Receta encontrada"),
+            @ApiResponse(responseCode = "404", description = "Receta no encontrada")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<RecetaDetalleResponse> obtenerRecetaPorId(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(recetaService.obtenerRecetaPorId(id));
+    }
+}

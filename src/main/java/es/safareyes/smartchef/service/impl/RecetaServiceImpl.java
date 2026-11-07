@@ -1,18 +1,32 @@
 package es.safareyes.smartchef.service.impl;
 
-import es.safareyes.smartchef.dtos.request.*;
+import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
+import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.request.IngredienteRecetaRequest;
+import es.safareyes.smartchef.dtos.request.PasoRecetaRequest;
+import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
 import es.safareyes.smartchef.dtos.response.IngredienteResponse;
+import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
-import es.safareyes.smartchef.repository.IUsuarioRepository;
-import es.safareyes.smartchef.repository.IDespensaRepository;
-import es.safareyes.smartchef.mapper.IngredienteMapper;
-import es.safareyes.smartchef.entity.*;
+import es.safareyes.smartchef.entity.Despensa;
+import es.safareyes.smartchef.entity.EIngredientesTipoCantidad;
+import es.safareyes.smartchef.entity.EPreferenciasTipo;
+import es.safareyes.smartchef.entity.Ingredientes;
+import es.safareyes.smartchef.entity.IngredientesReceta;
+import es.safareyes.smartchef.entity.Paso;
+import es.safareyes.smartchef.entity.Receta;
 import es.safareyes.smartchef.exception.ElementoDuplicado;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
 import es.safareyes.smartchef.exception.ReglaNegocioException;
+import es.safareyes.smartchef.mapper.IngredienteMapper;
 import es.safareyes.smartchef.mapper.RecetaMapper;
-import es.safareyes.smartchef.repository.*;
+import es.safareyes.smartchef.repository.IDespensaRepository;
+import es.safareyes.smartchef.repository.IIngredientesRecetaRepository;
+import es.safareyes.smartchef.repository.IIngredientesRepository;
+import es.safareyes.smartchef.repository.IPasoRepository;
+import es.safareyes.smartchef.repository.IRecetaRepository;
+import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IRecetaService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,10 +34,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -193,7 +212,7 @@ public class RecetaServiceImpl implements IRecetaService {
         return recetaMapper.aResponse(recetaGuardada);
     }
 
-
+    // POST - Buscar recetas por ingredientes (RN-04)
     @Override
     public List<BuscarPorIngredientesResponse> buscarPorIngredientes(
             BuscarPorIngredientesRequest datos) {
@@ -302,4 +321,102 @@ public class RecetaServiceImpl implements IRecetaService {
         return resultados;
     }
 
+    // GET - Consultar receta por ID con sus datos calculados
+    @Override
+    public RecetaDetalleResponse obtenerRecetaPorId(Integer id) {
+
+        // 1. Buscar la receta
+        Receta receta = recetaRepository.findById(id)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe una receta con ID: " + id
+                ));
+
+        // 2. Obtener sus ingredientes
+        List<IngredientesReceta> ingredientes = receta.getIngredientesReceta();
+
+        // 3. Calcular el coste y las preferencias
+        BigDecimal costeTotal = BigDecimal.ZERO;
+        boolean vegetariano = true;
+        boolean sinGluten = true;
+
+        for (IngredientesReceta ir : ingredientes) {
+
+            Ingredientes ingrediente = ir.getIngrediente();
+
+            if (ir.getCantidad() == null
+                    || ingrediente.getPrecio() == null
+                    || ingrediente.getEIngredientesTipoCantidad() == null) {
+                throw new ReglaNegocioException(
+                        "Faltan datos para calcular el coste de la receta"
+                );
+            }
+
+            BigDecimal coste = ir.getCantidad()
+                    .multiply(ingrediente.getPrecio());
+
+            if (ingrediente.getEIngredientesTipoCantidad()
+                    != EIngredientesTipoCantidad.UNIDADES) {
+
+                coste = coste.divide(
+                        BigDecimal.valueOf(100),
+                        4,
+                        RoundingMode.HALF_UP
+                );
+            }
+
+            costeTotal = costeTotal.add(coste);
+
+            boolean aptoVegetariano = ingrediente.getAlergias()
+                    .stream()
+                    .anyMatch(p -> p.getEPreferenciasTipo()
+                            == EPreferenciasTipo.VEGETARIANO);
+
+            boolean aptoSinGluten = ingrediente.getAlergias()
+                    .stream()
+                    .anyMatch(p -> p.getEPreferenciasTipo()
+                            == EPreferenciasTipo.SINGLUTEN);
+
+            vegetariano = vegetariano && aptoVegetariano;
+            sinGluten = sinGluten && aptoSinGluten;
+        }
+
+        // 4. Calcular el coste por ración
+        if (receta.getRaciones() == null || receta.getRaciones() <= 0) {
+            throw new ReglaNegocioException(
+                    "La receta debe tener al menos una ración"
+            );
+        }
+
+        BigDecimal costePorRacion = costeTotal.divide(
+                BigDecimal.valueOf(receta.getRaciones()),
+                2,
+                RoundingMode.HALF_UP
+        );
+
+        boolean rapido = receta.getTiempo() != null
+                && receta.getTiempo() <= 30;
+
+        boolean economico = costeTotal.compareTo(
+                BigDecimal.valueOf(receta.getRaciones())
+                        .multiply(BigDecimal.valueOf(2.50))
+        ) <= 0;
+
+        // 5. Ordenar los pasos
+        List<Paso> pasosOrdenados = receta.getPasos()
+                .stream()
+                .sorted(Comparator.comparing(Paso::getNumero))
+                .toList();
+
+        // 6. Convertir los datos mediante MapStruct
+        return new RecetaDetalleResponse(
+                recetaMapper.aResponse(receta),
+                costePorRacion,
+                vegetariano,
+                sinGluten,
+                rapido,
+                economico,
+                recetaMapper.toIngredientesDto(ingredientes),
+                recetaMapper.toPasosDto(pasosOrdenados)
+        );
+    }
 }

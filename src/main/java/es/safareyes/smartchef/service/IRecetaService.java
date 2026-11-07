@@ -4,6 +4,7 @@ import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
 import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
+import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import org.springframework.data.domain.Page;
 
@@ -21,5 +22,8 @@ public interface IRecetaService {
     List<BuscarPorIngredientesResponse> buscarPorIngredientes(
             BuscarPorIngredientesRequest datos
     );
+
+    // Consultar el detalle de una receta por ID
+    RecetaDetalleResponse obtenerRecetaPorId(Integer id);
 
 }
