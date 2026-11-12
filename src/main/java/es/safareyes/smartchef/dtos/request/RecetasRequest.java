@@ -1,4 +1,3 @@
-
 package es.safareyes.smartchef.dtos.request;
 
 import es.safareyes.smartchef.entity.ERecetaDificultad;

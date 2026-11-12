@@ -1,7 +1,7 @@
 package es.safareyes.smartchef.mapper;
 
 import es.safareyes.smartchef.dtos.DatosFiltradoReceta;
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.request.GuardarRecetaRequest;
 import es.safareyes.smartchef.dtos.response.IngredienteRecetaResponse;
 import es.safareyes.smartchef.dtos.response.PasoRecetaResponse;
 import es.safareyes.smartchef.dtos.response.RecetaResponse;
@@ -10,6 +10,7 @@ import es.safareyes.smartchef.entity.Paso;
 import es.safareyes.smartchef.entity.Receta;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public interface RecetaMapper {
     @Mapping(target = "pasos", ignore = true)
     @Mapping(target = "fotos", ignore = true)
     @Mapping(target = "colecciones", ignore = true)
-    Receta toEntity(CrearRecetaRequest dto);
+    Receta toEntity(GuardarRecetaRequest dto);
 
 
     // Convertir los ingredientes de una receta a DTO
@@ -57,5 +58,15 @@ public interface RecetaMapper {
     List<PasoRecetaResponse> toPasosDto(List<Paso> pasos);
 
 
-}
+    //Actualizar una receta existente
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "calorias", ignore = true)
+    @Mapping(target = "ERecetaDificultad", source = "dificultad")
+    @Mapping(target = "ingredientesReceta", ignore = true)
+    @Mapping(target = "pasos", ignore = true)
+    @Mapping(target = "fotos", ignore = true)
+    @Mapping(target = "colecciones", ignore = true)
+    void actualizarReceta(GuardarRecetaRequest dto, @MappingTarget Receta receta);
+
+}

@@ -1,7 +1,7 @@
 package es.safareyes.smartchef.service.impl;
 
 import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.request.GuardarRecetaRequest;
 import es.safareyes.smartchef.dtos.request.IngredienteRecetaRequest;
 import es.safareyes.smartchef.dtos.request.PasoRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
@@ -88,7 +88,7 @@ public class RecetaServiceImpl implements IRecetaService {
     // POST - Crear una receta
     @Override
     @Transactional
-    public RecetaResponse crearReceta(CrearRecetaRequest json) {
+    public RecetaResponse crearReceta(GuardarRecetaRequest json) {
 
         // 1. Comprobar que el nombre no esté repetido
         if (recetaRepository.existsByNombreIgnoreCase(json.nombre())) {
@@ -419,4 +419,151 @@ public class RecetaServiceImpl implements IRecetaService {
                 recetaMapper.toPasosDto(pasosOrdenados)
         );
     }
+
+    //PUT - Modificar receta
+
+    @Override
+    @Transactional
+    public RecetaResponse modificarReceta(Integer id, GuardarRecetaRequest dto) {
+
+        // 1. Buscar la receta
+        Receta receta = recetaRepository.findById(id)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe una receta con ID: " + id
+                ));
+
+        // 2. Comprobar que el nombre no pertenezca a otra receta
+        if (!receta.getNombre().equalsIgnoreCase(dto.nombre())
+                && recetaRepository.existsByNombreIgnoreCase(dto.nombre())) {
+            throw new ElementoDuplicado(
+                    "Ya existe una receta con el nombre: " + dto.nombre()
+            );
+        }
+
+        // 3. Comprobar que los pasos estén numerados sin huecos
+        List<Integer> numeros = dto.pasos().stream()
+                .map(PasoRecetaRequest::numero)
+                .sorted()
+                .toList();
+
+        for (int i = 0; i < numeros.size(); i++) {
+            if (numeros.get(i) != i + 1) {
+                throw new ReglaNegocioException(
+                        "Los pasos deben estar numerados desde 1 y sin huecos"
+                );
+            }
+        }
+
+        // 4. Preparar ingredientes y recalcular calorías
+        Set<Integer> idsIngredientes = new HashSet<>();
+        List<IngredientesReceta> relaciones = new ArrayList<>();
+        BigDecimal caloriasTotales = BigDecimal.ZERO;
+
+        for (IngredienteRecetaRequest item : dto.ingredientes()) {
+
+            if (!idsIngredientes.add(item.idIngrediente())) {
+                throw new ReglaNegocioException(
+                        "No se puede repetir un ingrediente en la receta"
+                );
+            }
+
+            Ingredientes ingrediente = ingredientesRepository
+                    .findById(item.idIngrediente())
+                    .orElseThrow(() -> new RelacionNoEncontrada(
+                            "No existe el ingrediente con ID: " + item.idIngrediente()
+                    ));
+
+            if (ingrediente.getCalorias() == null
+                    || ingrediente.getEIngredientesTipoCantidad() == null) {
+                throw new ReglaNegocioException(
+                        "El ingrediente no tiene datos suficientes: "
+                                + ingrediente.getNombre()
+                );
+            }
+
+            BigDecimal calorias = BigDecimal
+                    .valueOf(ingrediente.getCalorias())
+                    .multiply(item.cantidad());
+
+            if (ingrediente.getEIngredientesTipoCantidad()
+                    != EIngredientesTipoCantidad.UNIDADES) {
+                calorias = calorias.divide(
+                        BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP
+                );
+            }
+
+            caloriasTotales = caloriasTotales.add(calorias);
+
+            IngredientesReceta relacion = new IngredientesReceta();
+            relacion.setIngrediente(ingrediente);
+            relacion.setCantidad(item.cantidad());
+            relacion.setReceta(receta);
+            relaciones.add(relacion);
+        }
+
+        // 5. Modificar los campos simples mediante MapStruct
+        recetaMapper.actualizarReceta(dto, receta);
+
+        // 6. Calcular calorías por ración
+        int caloriasPorRacion = caloriasTotales.divide(
+                BigDecimal.valueOf(dto.raciones()), 0, RoundingMode.HALF_UP
+        ).intValueExact();
+        receta.setCalorias(caloriasPorRacion);
+
+        // 7. Guardar referencia a los registros hijos antiguos
+        List<IngredientesReceta> ingredientesAntiguos =
+                new ArrayList<>(receta.getIngredientesReceta());
+        List<Paso> pasosAntiguos = new ArrayList<>(receta.getPasos());
+
+        // 8. Quitar las relaciones antiguas de las colecciones gestionadas
+        receta.getIngredientesReceta().clear();
+        receta.getPasos().clear();
+
+        // 9. Eliminarlas explícitamente (no utilizamos orphanRemoval)
+        ingredientesRecetaRepository.deleteAll(ingredientesAntiguos);
+        pasoRepository.deleteAll(pasosAntiguos);
+        ingredientesRecetaRepository.flush();
+        pasoRepository.flush();
+
+        // 10. Añadir los hijos nuevos por ambos lados de la relación
+        receta.getIngredientesReceta().addAll(relaciones);
+        for (PasoRecetaRequest item : dto.pasos()) {
+            Paso paso = new Paso();
+            paso.setNumero(item.numero());
+            paso.setDescripcion(item.descripcion());
+            paso.setReceta(receta);
+            receta.getPasos().add(paso);
+        }
+
+        // 11. Guardar la receta; cascade = ALL persiste los nuevos hijos
+        Receta recetaGuardada = recetaRepository.save(receta);
+        return recetaMapper.aResponse(recetaGuardada);
+    }
+
+
+    // PATCH - Retirar una receta (baja lógica)
+    @Override
+    @Transactional
+    public void retirarReceta(Integer id) {
+
+        // 1. Buscar la receta por su ID
+        Receta receta = recetaRepository.findById(id)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe una receta con ID: " + id
+                ));
+
+        // 2. Comprobar si ya está retirada
+        if (Boolean.TRUE.equals(receta.getRetirada())) {
+            throw new ReglaNegocioException(
+                    "La receta ya está retirada"
+            );
+        }
+
+        // 3. Cambiar el estado de la receta
+        receta.setRetirada(true);
+
+        // 4. Guardar los cambios
+        recetaRepository.save(receta);
+    }
+
 }

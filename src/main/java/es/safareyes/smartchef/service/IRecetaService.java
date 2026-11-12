@@ -1,7 +1,7 @@
 package es.safareyes.smartchef.service;
 
 import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.request.GuardarRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
 import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
@@ -16,7 +16,7 @@ public interface IRecetaService {
     Page<RecetaResponse> buscarRecetas(RecetasRequest filtros);
 
     // Crear una receta
-    RecetaResponse crearReceta(CrearRecetaRequest dto);
+    RecetaResponse crearReceta(GuardarRecetaRequest dto);
 
     // Buscar recetas según los ingredientes disponibles
     List<BuscarPorIngredientesResponse> buscarPorIngredientes(
@@ -25,5 +25,14 @@ public interface IRecetaService {
 
     // Consultar el detalle de una receta por ID
     RecetaDetalleResponse obtenerRecetaPorId(Integer id);
+
+    //Modificar una receta
+
+    RecetaResponse modificarReceta(Integer id, GuardarRecetaRequest dto);
+
+
+    // Retirar una receta (baja lógica)
+    void retirarReceta(Integer id);
+
 
 }

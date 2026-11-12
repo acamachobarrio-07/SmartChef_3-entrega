@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(exclude = {"pasos", "ingredientesReceta", "fotos", "colecciones"})
 @ToString(exclude = {"pasos", "ingredientesReceta", "fotos", "colecciones"})
 public class Receta {
@@ -38,6 +37,9 @@ public class Receta {
     @Column(name="descripcion")
     private String descripcion;
 
+    @Column(name = "retirada", nullable = false)
+    private Boolean retirada = false;
+
     @Enumerated(EnumType.ORDINAL)
     @Column(name="dificultad")
     private ERecetaDificultad eRecetaDificultad;
@@ -45,10 +47,10 @@ public class Receta {
     @ManyToMany(mappedBy = "recetas", fetch = FetchType.LAZY)
     private Set<Coleccion> colecciones = new HashSet<>();
 
-    @OneToMany(mappedBy = "receta", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Paso> pasos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receta", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<IngredientesReceta> ingredientesReceta = new ArrayList<>();
 
     @OneToMany(mappedBy = "receta", fetch = FetchType.LAZY)

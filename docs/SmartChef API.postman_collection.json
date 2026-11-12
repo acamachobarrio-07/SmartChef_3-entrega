@@ -548,6 +548,39 @@
             "method": "GET",
             "header": [],
             "url": {
+              "raw": "http://localhost:8080/api/v1/recetas/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "recetas",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Id - Receta NO apta para todos los filtros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Estado HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"Receta vegetariana\", function () {\r\n    pm.expect(datos.vegetariano).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta sin gluten\", function () {\r\n    pm.expect(datos.sinGluten).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta rápida\", function () {\r\n    pm.expect(datos.rapido).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta económica\", function () {\r\n    pm.expect(datos.economico).to.eql(true);\r\n});\r\n\r\npm.test(\"Coste por ración correcto\", function () {\r\n    pm.expect(Number(datos.costePorRacion)).to.eql(0.56);\r\n});\r\n\r\npm.test(\"Contiene ingredientes\", function () {\r\n    pm.expect(datos.ingredientes.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Contiene pasos ordenados\", function () {\r\n    const numeros = datos.pasos.map(paso => paso.numero);\r\n\r\n    pm.expect(numeros).to.have.length.above(0);\r\n\r\n    numeros.forEach((numero, indice) => {\r\n        pm.expect(numero).to.eql(indice + 1);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
               "raw": "http://localhost:8080/api/v1/recetas/62",
               "protocol": "http",
               "host": [
@@ -763,7 +796,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "\r\n{\r\n  \"nombre\": \"Garbanzos salteados con espinacas y huevo - Test POST 04\",\r\n  \"descripcion\": \"Plato saludable de garbanzos salteados con espinacas frescas y huevo cocido.\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 4,\r\n      \"cantidad\": 200\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 2\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Cocer los huevos durante 10 minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Lavar las espinacas y saltearlas en una sartén.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Añadir los garbanzos cocidos y mezclar durante unos minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Servir los garbanzos con los huevos cocidos cortados por la mitad.\"\r\n    }\r\n  ]\r\n}\r\n",
+              "raw": "{\r\n  \"nombre\": \"Garbanzos salteados con espinacas y huevo - Test POST 04\",\r\n  \"descripcion\": \"Plato saludable de garbanzos salteados con espinacas frescas y huevo cocido.\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 4,\r\n      \"cantidad\": 200\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 2\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Cocer los huevos durante 10 minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Lavar las espinacas y saltearlas en una sartén.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Añadir los garbanzos cocidos y mezclar durante unos minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Servir los garbanzos con los huevos cocidos cortados por la mitad.\"\r\n    }\r\n  ]\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -819,6 +852,206 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "06 - Ingredientes",
+      "item": [
+        {
+          "name": "Ingredientes - Catálogo completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/ingredientes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "ingredientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ingredientes - Buscar ingrediente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/ingredientes?texto=tomate&page=0&size=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "ingredientes"
+              ],
+              "query": [
+                {
+                  "key": "texto",
+                  "value": "tomate"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 - Buscar recetas por ingredientes",
+      "item": [
+        {
+          "name": "Buscar receta por ingredientes",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idsIngredientes\": [1, 2, 3, 4, 5]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "recetas",
+                "buscar-por-ingredientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar receta por usuario (despensa)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idUsuario\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "recetas",
+                "buscar-por-ingredientes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 - Despensa por usuario",
+      "item": [
+        {
+          "name": "Despensa por usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/despensa?idUsuario=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "despensa"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Recetas - Modificar",
+      "item": [
+        {
+          "name": "Modificar receta",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Receta modificada de prueba\",\r\n  \"descripcion\": \"Receta actualizada desde Postman\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 50\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Preparar los ingredientes\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Cocinar y servir\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recetas/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "recetas",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Eliminar receta (lógica)",
+      "item": []
     }
   ]
 }

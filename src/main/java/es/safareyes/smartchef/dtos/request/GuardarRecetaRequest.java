@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 
 import java.util.List;
 
-public record CrearRecetaRequest(
+public record GuardarRecetaRequest(
 
         @NotBlank(message = "El nombre es obligatorio")
         @Size(max = 150, message = "El nombre no puede superar los 150 caracteres")

@@ -1,7 +1,7 @@
 package es.safareyes.smartchef.controller;
 
 import es.safareyes.smartchef.dtos.request.BuscarPorIngredientesRequest;
-import es.safareyes.smartchef.dtos.request.CrearRecetaRequest;
+import es.safareyes.smartchef.dtos.request.GuardarRecetaRequest;
 import es.safareyes.smartchef.dtos.request.RecetasRequest;
 import es.safareyes.smartchef.dtos.response.BuscarPorIngredientesResponse;
 import es.safareyes.smartchef.dtos.response.RecetaDetalleResponse;
@@ -77,7 +77,7 @@ public class RecetaController {
     })
     @PostMapping({"", "/crear"})
     public ResponseEntity<RecetaResponse> crearReceta(
-            @Valid @RequestBody CrearRecetaRequest json) {
+            @Valid @RequestBody GuardarRecetaRequest json) {
 
         RecetaResponse recetaCreada = recetaService.crearReceta(json);
 
@@ -117,4 +117,70 @@ public class RecetaController {
 
         return ResponseEntity.ok(recetaService.obtenerRecetaPorId(id));
     }
+
+
+    // PUT - Modificar una receta existente
+    @Operation(
+            summary = "Modificar una receta existente",
+            description = "Actualiza los datos, ingredientes y pasos de una receta"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Receta modificada correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos de la receta no válidos",
+                    content = @Content(
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Receta no encontrada"
+            )
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<RecetaResponse> modificarReceta(
+            @PathVariable Integer id,
+            @Valid @RequestBody GuardarRecetaRequest dto) {
+
+        return ResponseEntity.ok(
+                recetaService.modificarReceta(id, dto)
+        );
+    }
+
+
+    // Retirar una receta (baja lógica)
+    @Operation(
+            summary = "Retirar una receta",
+            description = "Realiza una baja lógica sin eliminar la receta de la base de datos"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Receta retirada correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Receta no encontrada"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "La receta ya está retirada",
+                    content = @Content(
+                            schema = @Schema(implementation = ProblemDetail.class)
+                    )
+            )
+    })
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> retirarReceta(@PathVariable Integer id) {
+
+        recetaService.retirarReceta(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
