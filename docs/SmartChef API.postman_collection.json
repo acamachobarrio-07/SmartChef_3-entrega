@@ -796,7 +796,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"nombre\": \"Garbanzos salteados con espinacas y huevo - Test POST 04\",\r\n  \"descripcion\": \"Plato saludable de garbanzos salteados con espinacas frescas y huevo cocido.\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 4,\r\n      \"cantidad\": 200\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 2\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Cocer los huevos durante 10 minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Lavar las espinacas y saltearlas en una sartén.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Añadir los garbanzos cocidos y mezclar durante unos minutos.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Servir los garbanzos con los huevos cocidos cortados por la mitad.\"\r\n    }\r\n  ]\r\n}\r\n",
+              "raw": "\r\n{\r\n  \"nombre\": \"Tortilla de champiñones con queso y tomate - Test POST 05\",\r\n  \"descripcion\": \"Tortilla casera con champiñones salteados, queso fundido y tomate fresco.\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 20,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 3\r\n    },\r\n    {\r\n      \"idIngrediente\": 19,\r\n      \"cantidad\": 150\r\n    },\r\n    {\r\n      \"idIngrediente\": 3,\r\n      \"cantidad\": 60\r\n    },\r\n    {\r\n      \"idIngrediente\": 7,\r\n      \"cantidad\": 120\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Lavar y cortar los champiñones y el tomate en trozos pequeños.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Saltear los champiñones en una sartén hasta que estén tiernos.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Batir los huevos y añadir los champiñones y el queso.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Verter la mezcla en la sartén y cocinar la tortilla por ambos lados.\"\r\n    },\r\n    {\r\n      \"numero\": 5,\r\n      \"descripcion\": \"Servir la tortilla acompañada del tomate fresco.\"\r\n    }\r\n  ]\r\n}\r\n\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1052,6 +1052,154 @@
     {
       "name": "05 - Eliminar receta (lógica)",
       "item": []
+    },
+    {
+      "name": "09 - Despensa - Actualizar",
+      "item": [
+        {
+          "name": "Despensa - Añadir nuevo ingrediente",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"cantidad\": 500, \r\n    \"caducidad\": \"2026-11-25\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "despensa",
+                "5"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Despensa - Actualizar nuevo ingrediente",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"cantidad\": 250, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "despensa",
+                "5"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Despensa - Eliminar con cantidad 0",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"cantidad\": 0, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "despensa",
+                "5"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12 - Colecciones - Consultar",
+      "item": [
+        {
+          "name": "Colección - Consultar por usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/colecciones?idUsuario=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "colecciones"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
