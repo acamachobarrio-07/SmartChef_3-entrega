@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -47,6 +48,18 @@ public class ErrorGlobalController {
                 HttpStatus.BAD_REQUEST,
                 "Parámetro no válido",
                 "El parámetro '" + ex.getName() + "' tiene un formato incorrecto"
+        );
+    }
+
+    // 400 - JSON mal formado: fechas con formato incorrecto, enums inexistentes...
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail jsonNoValido(HttpMessageNotReadableException ex) {
+
+        return construir(
+                HttpStatus.BAD_REQUEST,
+                "JSON no válido",
+                "Revisa el formato de los datos enviados: las fechas deben ser AAAA-MM-DD "
+                        + "y los valores de los campos deben ser válidos"
         );
     }
 

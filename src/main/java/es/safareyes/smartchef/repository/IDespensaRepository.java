@@ -5,6 +5,7 @@ import es.safareyes.smartchef.entity.Despensa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.Optional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,6 +56,12 @@ public interface IDespensaRepository extends JpaRepository<Despensa, Integer> {
             """)
     List<Despensa> listarPorUsuarioOrdenadoPorCaducidad(
             @Param("idUsuario") Integer idUsuario
+    );
+
+    // Buscar un ingrediente concreto en la despensa de un usuario
+    Optional<Despensa> findByUsuarioIdAndIngredienteId(
+            Integer idUsuario,
+            Integer idIngrediente
     );
 
 }
