@@ -1,6 +1,6 @@
 package es.safareyes.smartchef.repository;
 
-import es.safareyes.smartchef.dtos.DatosColeccionReceta;
+import es.safareyes.smartchef.dtos.response.FilaColeccionResponse;
 import es.safareyes.smartchef.entity.Coleccion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,19 +12,22 @@ import java.util.List;
 @Repository
 public interface IColeccionRepository extends JpaRepository<Coleccion, Integer> {
 
-    //Mis colecciones con sus recetas
+    // Mis colecciones con sus recetas
+    // LEFT JOIN: también devuelve las colecciones vacías (RN-08)
     @Query("""
-    SELECT new es.safareyes.smartchef.dtos.DatosColeccionReceta(
+    SELECT new es.safareyes.smartchef.dtos.response.FilaColeccionResponse(
+        c.id,
         c.nombre,
+        r.id,
         r.nombre,
         r.tiempo,
-        r.eRecetaDificultad
+        r.eRecetaDificultad,
+        r.retirada
     )
     FROM Coleccion c
-    JOIN c.recetas r
+    LEFT JOIN c.recetas r
     WHERE c.usuario.id = :idUsuario
     ORDER BY c.nombre ASC, r.nombre ASC
     """)
-    List<DatosColeccionReceta> obtenerColeccionesConRecetasPorUsuario(@Param("idUsuario") Integer idUsuario);
+    List<FilaColeccionResponse> obtenerColeccionesConRecetasPorUsuario(@Param("idUsuario") Integer idUsuario);
 }
-

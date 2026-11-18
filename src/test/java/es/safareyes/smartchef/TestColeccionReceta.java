@@ -1,6 +1,6 @@
 package es.safareyes.smartchef;
 
-import es.safareyes.smartchef.dtos.DatosColeccionReceta;
+import es.safareyes.smartchef.dtos.response.FilaColeccionResponse;
 import es.safareyes.smartchef.repository.IColeccionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,6 @@ public class TestColeccionReceta {
 
     @Test
     void consultarColeccionesConRecetas() {
-        List<DatosColeccionReceta> colecciones = repository.obtenerColeccionesConRecetasPorUsuario(2);
+        List<FilaColeccionResponse> colecciones = repository.obtenerColeccionesConRecetasPorUsuario(2);
     }
 }
