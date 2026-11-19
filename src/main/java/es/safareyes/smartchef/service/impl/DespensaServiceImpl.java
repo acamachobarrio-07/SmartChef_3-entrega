@@ -7,7 +7,7 @@ import es.safareyes.smartchef.entity.Despensa;
 import es.safareyes.smartchef.entity.Ingredientes;
 import es.safareyes.smartchef.entity.Usuario;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
-import es.safareyes.smartchef.mapper.DespensaMapper;
+import es.safareyes.smartchef.mapper.IDespensaMapper;
 import es.safareyes.smartchef.repository.IDespensaRepository;
 import es.safareyes.smartchef.repository.IIngredientesRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
@@ -28,7 +28,7 @@ public class DespensaServiceImpl implements IDespensaService {
     private IDespensaRepository despensaRepository;
     private IUsuarioRepository usuarioRepository;
     private IIngredientesRepository ingredientesRepository;
-    private DespensaMapper despensaMapper;
+    private IDespensaMapper despensaMapper;
 
     // GET - Consultar la despensa de un usuario
     @Override

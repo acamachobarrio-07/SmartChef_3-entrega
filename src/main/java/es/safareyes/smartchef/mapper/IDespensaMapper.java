@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = IngredienteMapper.class)
-public interface DespensaMapper {
+@Mapper(componentModel = "spring", uses = IIngredienteMapper.class)
+public interface IDespensaMapper {
 
     // Convertir una entidad Despensa a su DTO
     DespensaResponse toDto(Despensa despensa);

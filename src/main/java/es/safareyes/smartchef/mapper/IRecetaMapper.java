@@ -15,7 +15,7 @@ import org.mapstruct.MappingTarget;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface RecetaMapper {
+public interface IRecetaMapper {
 
     // Convertir entidad a DTO de respuesta
     @Mapping(target = "dificultad", source = "ERecetaDificultad")

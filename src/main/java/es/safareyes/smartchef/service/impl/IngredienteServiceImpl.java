@@ -2,7 +2,7 @@ package es.safareyes.smartchef.service.impl;
 
 import es.safareyes.smartchef.dtos.request.IngredienteRequest;
 import es.safareyes.smartchef.dtos.response.IngredienteResponse;
-import es.safareyes.smartchef.mapper.IngredienteMapper;
+import es.safareyes.smartchef.mapper.IIngredienteMapper;
 import es.safareyes.smartchef.repository.IIngredientesRepository;
 import es.safareyes.smartchef.service.IIngredienteService;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class IngredienteServiceImpl implements IIngredienteService {
 
     private IIngredientesRepository ingredientesRepository;
-    private IngredienteMapper ingredienteMapper;
+    private IIngredienteMapper ingredienteMapper;
 
     @Override
     public Page<IngredienteResponse> buscarIngredientes(IngredienteRequest filtros) {

@@ -3,7 +3,7 @@ package es.safareyes.smartchef.service.impl;
 import es.safareyes.smartchef.dtos.response.ColeccionResponse;
 import es.safareyes.smartchef.dtos.response.FilaColeccionResponse;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
-import es.safareyes.smartchef.mapper.ColeccionMapper;
+import es.safareyes.smartchef.mapper.IColeccionMapper;
 import es.safareyes.smartchef.repository.IColeccionRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IColeccionService;
@@ -23,7 +23,7 @@ public class ColeccionServiceImpl implements IColeccionService {
 
     private IColeccionRepository coleccionRepository;
     private IUsuarioRepository usuarioRepository;
-    private ColeccionMapper coleccionMapper;
+    private IColeccionMapper coleccionMapper;
 
     // GET - Colecciones del usuario con sus recetas
     @Override

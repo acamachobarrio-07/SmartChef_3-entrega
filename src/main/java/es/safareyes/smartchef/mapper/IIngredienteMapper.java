@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 
-public interface IngredienteMapper {
+public interface IIngredienteMapper {
 
     // Convertir entidad a DTO de respuesta
     @Mapping(target = "tipoCantidad",

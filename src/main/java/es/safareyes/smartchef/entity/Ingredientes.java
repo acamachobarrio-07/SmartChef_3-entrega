@@ -30,7 +30,7 @@ public class Ingredientes {
     private String nombre;
 
     //ENUM
-    @Enumerated()
+    @Enumerated(EnumType.ORDINAL)
     @Column(name="tipo_cantidad")
     private EIngredientesTipoCantidad eIngredientesTipoCantidad;
 
@@ -49,9 +49,5 @@ public class Ingredientes {
     )
 
     private Set<Preferencias> alergias = new HashSet<>();
-
-    // N:M lista_compra
-    @ManyToMany(mappedBy = "listaCompra", fetch = FetchType.LAZY)
-    private Set<Usuario> usuariosListaCompra = new HashSet<>();
 
 }

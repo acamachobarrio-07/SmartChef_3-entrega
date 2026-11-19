@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface ColeccionMapper {
+public interface IColeccionMapper {
 
     // Convertir una fila de la consulta en la receta de una colección
     // tiempo, dificultad y retirada se llaman igual y se copian solos

@@ -19,8 +19,8 @@ import es.safareyes.smartchef.entity.Receta;
 import es.safareyes.smartchef.exception.ElementoDuplicado;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
 import es.safareyes.smartchef.exception.ReglaNegocioException;
-import es.safareyes.smartchef.mapper.IngredienteMapper;
-import es.safareyes.smartchef.mapper.RecetaMapper;
+import es.safareyes.smartchef.mapper.IIngredienteMapper;
+import es.safareyes.smartchef.mapper.IRecetaMapper;
 import es.safareyes.smartchef.repository.IDespensaRepository;
 import es.safareyes.smartchef.repository.IIngredientesRecetaRepository;
 import es.safareyes.smartchef.repository.IIngredientesRepository;
@@ -50,13 +50,13 @@ import java.util.Set;
 public class RecetaServiceImpl implements IRecetaService {
 
     private IRecetaRepository recetaRepository;
-    private RecetaMapper recetaMapper;
+    private IRecetaMapper recetaMapper;
     private IIngredientesRepository ingredientesRepository;
     private IIngredientesRecetaRepository ingredientesRecetaRepository;
     private IPasoRepository pasoRepository;
     private IUsuarioRepository usuarioRepository;
     private IDespensaRepository despensaRepository;
-    private IngredienteMapper ingredienteMapper;
+    private IIngredienteMapper ingredienteMapper;
 
     // GET - Buscar recetas con filtros
     @Override

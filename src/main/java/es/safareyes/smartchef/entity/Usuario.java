@@ -49,16 +49,4 @@ public class Usuario {
     )
 
     private Set<Preferencias> preferencias = new HashSet<>();
-
-    //N:M lista_compra
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "lista_compra",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_ingredientes")
-    )
-
-    private Set<Ingredientes> listaCompra = new HashSet<>();
-
-
 }
