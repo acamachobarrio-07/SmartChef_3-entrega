@@ -1200,6 +1200,22 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "10 - Lista compra - Añadir lo que falta de una receta",
+      "item": [
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
