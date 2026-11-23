@@ -1,5 +1,6 @@
 package es.safareyes.smartchef.controller;
 
+import es.safareyes.smartchef.dtos.request.CerrarListaRequest;
 import es.safareyes.smartchef.dtos.request.DesdeRecetaRequest;
 import es.safareyes.smartchef.dtos.response.ListaCompraResponse;
 import es.safareyes.smartchef.service.IListaCompraService;
@@ -40,6 +41,30 @@ public class ListaCompraController {
 
         return ResponseEntity.ok(
                 listaCompraService.generarDesdeReceta(usuario.idUsuario(), request)
+        );
+    }
+
+    //PATCh - Cerrar la lista y pasar lo comprado a la despensa
+
+    @Operation(
+            summary = "Cerrar lista de la compra",
+            description = "Cerrar lista de la compra y pasar lo comprado a la despensa"
+    )
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de la compra cerrada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos no válidos"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado o fila que no está en su lista abierta"),
+            @ApiResponse(responseCode = "422", description = "El usuario no tiene ninguna lista abierta")
+    })
+
+    @PatchMapping("/{id}/cerrar")
+    public ResponseEntity<ListaCompraResponse> cerrarLista(
+            @PathVariable Integer id,
+            @Valid @RequestBody CerrarListaRequest request) {
+
+        return ResponseEntity.ok(
+                listaCompraService.cerrarLista(id, request)
         );
     }
 }

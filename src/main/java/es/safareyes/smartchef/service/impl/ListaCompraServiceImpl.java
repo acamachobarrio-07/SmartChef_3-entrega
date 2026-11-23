@@ -174,6 +174,80 @@ public class ListaCompraServiceImpl implements IListaCompraService {
     @Override
     @Transactional
     public ListaCompraResponse cerrarLista(Integer idUsuario, CerrarListaRequest request) {
-        return null;
+        //comprobar que el usuario existe
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe el usuario con ID: " + idUsuario
+                ));
+
+        //obtener las listas abiertas del usuario por fila
+
+        List<ListaCompra> filas = listaCompraRepository.findByUsuarioIdAndEstadoOrderByFechaAsc(
+                idUsuario,
+                EEstadoLista.ABIERTA
+        );
+
+        //si no tiene ninguna, no tenemos nada que cerrar
+
+        if(filas.isEmpty()){
+            throw new ReglaNegocioException(
+                    "No tienes ninguna lista de la compra abierta"
+            );
+        }
+
+        //id recibidos son filas abiertas suyas
+
+        for (Integer idComprado : request.idsComprados()) {
+
+            boolean esSuya = filas.stream()
+                    .anyMatch(fila -> fila.getId().equals(idComprado));
+
+            if (!esSuya) {
+                throw new RelacionNoEncontrada(
+                        "La fila " + idComprado + " no está en tu lista de la compra abierta"
+                );
+            }
+        }
+
+        // bucle para recorrer las filas:
+        // marcamos las compras y las sumamos a la despensa
+        for (ListaCompra fila : filas) {
+
+            // Si esta fila no se ha comprado, pasamos a la siguiente
+            if (!request.idsComprados().contains(fila.getId())) {
+                continue;
+            }
+
+            fila.setComprado(true);
+
+            // buscamos el ingrediente en la despensa
+            // sino lo tenemos creamos una nueva
+            Despensa despensa = despensaRepository
+                    .findByUsuarioIdAndIngredienteId(idUsuario, fila.getIngrediente().getId())
+                    .orElseGet(() -> {
+                        Despensa nueva = new Despensa();
+                        nueva.setUsuario(usuario);
+                        nueva.setIngrediente(fila.getIngrediente());
+                        nueva.setCantidad(BigDecimal.ZERO);
+                        return nueva;
+                    });
+
+            // sumamos lo comprado a lo que ya teniamos
+            despensa.setCantidad(despensa.getCantidad().add(fila.getCantidad()));
+            despensaRepository.save(despensa);
+        }
+
+        // cerramos todas las filas abiertas
+        for (ListaCompra fila : filas) {
+            fila.setEstado(EEstadoLista.CERRADA);
+        }
+
+        //devolvemos las listas cerradas
+        return new ListaCompraResponse(
+                idUsuario,
+                EEstadoLista.CERRADA,
+                listaCompraMapper.toDtoList(filas)
+        );
+
     }
 }
