@@ -1,4 +1,3 @@
-
 package es.safareyes.smartchef.controller;
 
 import es.safareyes.smartchef.dtos.request.DesdeRecetaRequest;
@@ -12,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import es.safareyes.smartchef.dtos.request.UsuarioRequest;
+import org.springdoc.core.annotations.ParameterObject;
 
 @Tag(name = "Lista de compra", description = "Gestión de la lista de la compra")
 @RestController
@@ -28,17 +29,17 @@ public class ListaCompraController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de la compra generada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos no válidos"),
+            @ApiResponse(responseCode = "400", description = "Datos no válidos o ID de usuario incorrecto"),
             @ApiResponse(responseCode = "404", description = "Usuario o receta no encontrados"),
             @ApiResponse(responseCode = "422", description = "La receta está retirada")
     })
     @PostMapping("/desde-receta")
     public ResponseEntity<ListaCompraResponse> generarDesdeReceta(
-            @RequestParam Integer idUsuario,
+            @ParameterObject @Valid @ModelAttribute UsuarioRequest usuario,
             @Valid @RequestBody DesdeRecetaRequest request) {
 
         return ResponseEntity.ok(
-                listaCompraService.generarDesdeReceta(idUsuario, request)
+                listaCompraService.generarDesdeReceta(usuario.idUsuario(), request)
         );
     }
 }

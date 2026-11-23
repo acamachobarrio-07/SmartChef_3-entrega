@@ -1,5 +1,6 @@
 package es.safareyes.smartchef.service.impl;
 
+import es.safareyes.smartchef.dtos.request.CerrarListaRequest;
 import es.safareyes.smartchef.dtos.request.DesdeRecetaRequest;
 import es.safareyes.smartchef.dtos.response.ListaCompraIngredienteResponse;
 import es.safareyes.smartchef.dtos.response.ListaCompraResponse;
@@ -167,5 +168,12 @@ public class ListaCompraServiceImpl implements IListaCompraService {
                 EEstadoLista.ABIERTA,
                 ingredientes
         );
+    }
+
+    //cerrar lista abierta y pasar lo comprado a la despensa
+    @Override
+    @Transactional
+    public ListaCompraResponse cerrarLista(Integer idUsuario, CerrarListaRequest request) {
+        return null;
     }
 }
