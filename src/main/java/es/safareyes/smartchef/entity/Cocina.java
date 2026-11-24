@@ -24,8 +24,9 @@ public class Cocina {
     @Column(name="id")
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="tipo")
-    private Integer tipo;
+    private ECocinaTipo tipo;
 
     @Column(name="fecha")
     private LocalDateTime fecha;

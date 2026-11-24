@@ -1,21 +1,31 @@
 package es.safareyes.smartchef.service.impl;
 
+import es.safareyes.smartchef.dtos.request.RegistroRequest;
 import es.safareyes.smartchef.dtos.response.ComidaResponse;
 import es.safareyes.smartchef.dtos.response.DiaSemanaResponse;
+import es.safareyes.smartchef.dtos.response.RegistroResponse;
 import es.safareyes.smartchef.dtos.response.SemanaCaloriasResponse;
 import es.safareyes.smartchef.dtos.response.SemanaResponse;
 import es.safareyes.smartchef.entity.Cocina;
+import es.safareyes.smartchef.entity.IngredientesReceta;
+import es.safareyes.smartchef.entity.Receta;
+import es.safareyes.smartchef.entity.Usuario;
+import es.safareyes.smartchef.exception.ElementoDuplicado;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
 import es.safareyes.smartchef.repository.ICocinaRepository;
+import es.safareyes.smartchef.repository.IDespensaRepository;
+import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.ICocinaService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
 
@@ -26,6 +36,8 @@ public class CocinaServiceImpl implements ICocinaService {
 
     private ICocinaRepository cocinaRepository;
     private IUsuarioRepository usuarioRepository;
+    private IRecetaRepository recetaRepository;
+    private IDespensaRepository despensaRepository;
 
     // GET - Semana con comidas y calorías por día (endpoint 15)
     @Override
@@ -73,7 +85,8 @@ public class CocinaServiceImpl implements ICocinaService {
                 if (registro.getFecha().toLocalDate().equals(actual)) {
                     comidas.add(new ComidaResponse(
                             registro.getId(),
-                            convertirMomento(registro.getTipo()),
+                            // El enum ya sabe su nombre: DESAYUNO, ALMUERZO o CENA
+                            registro.getTipo() != null ? registro.getTipo().name() : null,
                             registro.getReceta().getId(),
                             registro.getReceta().getNombre(),
                             registro.getReceta().getCalorias()
@@ -93,16 +106,74 @@ public class CocinaServiceImpl implements ICocinaService {
         return new SemanaResponse(lunes, domingo, caloriasSemana, dias);
     }
 
-    // Convierte el número guardado en "tipo" en el momento del día
-    private String convertirMomento(Integer tipo) {
-        if (tipo == null) {
-            return null;
+    // POST - Registrar lo que ha cocinado el usuario (endpoint 14, RN-07)
+    @Override
+    @Transactional
+    public RegistroResponse registrar(Integer idUsuario, RegistroRequest datos) {
+
+        // 1. Comprobar que el usuario existe (404)
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe el usuario con ID: " + idUsuario
+                ));
+
+        // 2. Comprobar que la receta existe (404)
+        Receta receta = recetaRepository.findById(datos.idReceta())
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe la receta con ID: " + datos.idReceta()
+                ));
+
+        // 3. RN-07: un registro por día y tipo de comida (409)
+        //    El día va desde las 00:00 hasta las 23:59:59
+        LocalDate dia = datos.fecha().toLocalDate();
+        LocalDateTime inicioDia = dia.atStartOfDay();
+        LocalDateTime finDia = dia.atTime(LocalTime.MAX);
+
+        if (cocinaRepository.existsByUsuarioIdAndTipoAndFechaBetween(
+                idUsuario, datos.tipo(), inicioDia, finDia)) {
+            throw new ElementoDuplicado(
+                    "Ya hay un registro de " + datos.tipo() + " el día " + dia
+            );
         }
-        return switch (tipo) {
-            case 1 -> "DESAYUNO";
-            case 2 -> "COMIDA";
-            case 3 -> "CENA";
-            default -> "DESCONOCIDO";
-        };
+
+        // 4. RN-07: si se pide, descontar de la despensa (nunca por debajo de 0)
+        if (Boolean.TRUE.equals(datos.descontarDespensa())) {
+            descontarDeDespensa(idUsuario, receta);
+        }
+
+        // 5. Crear y guardar el registro
+        Cocina registro = new Cocina();
+        registro.setUsuario(usuario);
+        registro.setReceta(receta);
+        registro.setTipo(datos.tipo());
+        registro.setFecha(datos.fecha());
+
+        Cocina guardado = cocinaRepository.save(registro);
+
+        // 6. Devolver el registro creado
+        return new RegistroResponse(
+                guardado.getId(),
+                guardado.getFecha(),
+                guardado.getTipo(),
+                receta.getId(),
+                receta.getNombre(),
+                receta.getCalorias(),
+                receta.getRetirada()
+        );
+    }
+
+    // Resta de la despensa los ingredientes de la receta, sin bajar nunca de 0
+    private void descontarDeDespensa(Integer idUsuario, Receta receta) {
+
+        for (IngredientesReceta ir : receta.getIngredientesReceta()) {
+
+            despensaRepository
+                    .findByUsuarioIdAndIngredienteId(idUsuario, ir.getIngrediente().getId())
+                    .ifPresent(despensa -> {
+                        BigDecimal resto = despensa.getCantidad().subtract(ir.getCantidad());
+                        // max(): si el resto es negativo, se queda en 0
+                        despensa.setCantidad(resto.max(BigDecimal.ZERO));
+                    });
+        }
     }
 }

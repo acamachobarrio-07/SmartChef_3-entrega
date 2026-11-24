@@ -2,6 +2,7 @@ package es.safareyes.smartchef.repository;
 
 import es.safareyes.smartchef.dtos.response.SemanaCaloriasResponse;
 import es.safareyes.smartchef.entity.Cocina;
+import es.safareyes.smartchef.entity.ECocinaTipo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -51,5 +52,13 @@ public interface ICocinaRepository extends JpaRepository<Cocina, Integer> {
             @Param("idUsuario") Integer idUsuario,
             @Param("desde") LocalDateTime desde,
             @Param("hasta") LocalDateTime hasta
+    );
+
+    // RN-07: ¿ya hay un registro de este usuario, con este tipo, entre dos instantes (un día)?
+    boolean existsByUsuarioIdAndTipoAndFechaBetween(
+            Integer idUsuario,
+            ECocinaTipo tipo,
+            LocalDateTime inicio,
+            LocalDateTime fin
     );
 }
