@@ -24,7 +24,7 @@ public class Cocina {
     @Column(name="id")
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name="tipo")
     private ECocinaTipo tipo;
 
