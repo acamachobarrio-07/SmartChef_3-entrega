@@ -1388,6 +1388,47 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "14 - Añadir registro",
+      "item": [
+        {
+          "name": "Añadir registro",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"idReceta\": 33, \r\n    \"tipo\": \"CENA\", \r\n    \"fecha\": \"2026-11-24T21:00:00\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "registros"
+              ],
+              "query": [
+                {
+                  "key": "idUsuario",
+                  "value": "15"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
