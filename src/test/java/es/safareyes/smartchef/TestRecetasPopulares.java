@@ -16,9 +16,9 @@ public class TestRecetasPopulares {
     @Autowired
     private IRecetaRepository repository;
 
-    @Test
-    void consultarTopRecetasPopulares() {
+    //@Test
+    //void consultarTopRecetasPopulares() {
         // Limitamos los resultados a los 5 primeros (Top 5)
-        List<DatosRecetasPopulares> populares = repository.findTop5ByUsuario(2);
-    }
+      //  List<DatosRecetasPopulares> populares = repository.findTop5ByUsuario(2);
+    //}
 }

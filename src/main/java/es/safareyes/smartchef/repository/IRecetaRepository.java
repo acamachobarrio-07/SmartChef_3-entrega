@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import es.safareyes.smartchef.dtos.response.RecetaPopularResponse;
+import java.time.LocalDateTime;
 
 
 import java.util.List;
@@ -120,25 +122,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
     """)
     List<DatosRecetaDetalle> obtenerDetalleRecetaConIngredientes(@Param("idReceta") Integer idReceta);
 
-    //top 5 recetas mas cocinadas y mas guardadas
-
-    @Query("""
-    SELECT new es.safareyes.smartchef.dtos.DatosRecetasPopulares(
-        r.nombre,
-        r.eRecetaDificultad,
-        r.tiempo,
-        COUNT(DISTINCT c.id),
-        COUNT(DISTINCT col.id)
-    )
-    FROM Receta r
-    LEFT JOIN Cocina c ON c.receta.id = r.id AND c.usuario.id = :idUsuario
-    LEFT JOIN r.colecciones col
-    WHERE c.id IS NOT NULL OR col.id IS NOT NULL
-    GROUP BY r.id, r.nombre, r.eRecetaDificultad, r.tiempo
-    ORDER BY (COUNT(DISTINCT c.id) + COUNT(DISTINCT col.id)) DESC
-    """)
-    List<DatosRecetasPopulares> findTop5ByUsuario(@Param("idUsuario") Integer idUsuario);
-
     // Buscar recetas con sus ingredientes
     @Query("""
             SELECT DISTINCT r
@@ -147,6 +130,43 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             LEFT JOIN FETCH ir.ingrediente
             """)
     List<Receta> buscarRecetasConIngredientes();
+
+    // recetas mas cocinadas entre dos fechas
+    @Query("""
+        SELECT new es.safareyes.smartchef.dtos.response.RecetaPopularResponse(
+            r.id,
+            r.nombre,
+            r.retirada,
+            COUNT(c.id)
+        )
+        FROM Cocina c
+        JOIN c.receta r
+        WHERE c.fecha >= :desde
+          AND c.fecha < :hasta
+        GROUP BY r.id, r.nombre, r.retirada
+        ORDER BY COUNT(c.id) DESC, r.nombre ASC
+        """)
+    List<RecetaPopularResponse> buscarMasCocinadas(
+            @Param("desde") LocalDateTime desde,
+            @Param("hasta") LocalDateTime hasta,
+            Pageable pageable
+    );
+
+    // recetas mas guardadas en colecciones
+    @Query("""
+        SELECT new es.safareyes.smartchef.dtos.response.RecetaPopularResponse(
+            r.id,
+            r.nombre,
+            r.retirada,
+            COUNT(col.id)
+        )
+        FROM Receta r
+        JOIN r.colecciones col
+        GROUP BY r.id, r.nombre, r.retirada
+        ORDER BY COUNT(col.id) DESC, r.nombre ASC
+        """)
+    List<RecetaPopularResponse> buscarMasGuardadas(Pageable pageable);
+
 }
 
     //@Query("""

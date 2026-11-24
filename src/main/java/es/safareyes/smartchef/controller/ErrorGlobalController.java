@@ -26,8 +26,14 @@ public class ErrorGlobalController {
 
         Map<String, String> errores = new LinkedHashMap<>();
 
+        // Errores de cada campo (@NotNull, @Positive...)
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errores.put(error.getField(), error.getDefaultMessage())
+        );
+
+        // Errores de validadores de clase, como @RangoFechas
+        ex.getBindingResult().getGlobalErrors().forEach(error ->
+                errores.put(error.getObjectName(), error.getDefaultMessage())
         );
 
         ProblemDetail problema = construir(

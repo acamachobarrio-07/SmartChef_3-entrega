@@ -31,7 +31,6 @@ public record RecetasRequest(
         Boolean economico,
 
 
-
         @Schema(description = "Número de página, empezando en 0", example = "0")
         @Min(value = 0, message = "La página no puede ser negativa")
         Integer page,
