@@ -8,14 +8,17 @@ import java.util.Set;
 
 /*La marcamos como tabla*/
 @Entity
-@Table(name="coleccion")
+//en la tabla colección no se puede repetir la pareja id_usuario+nombre
+// por ejemplo usuario 2 y 3 pueden tener colección Favoritas
+// pero el usuario 3 no puede tener dos colecciones favoritas
+@Table(name = "coleccion", uniqueConstraints = @UniqueConstraint(columnNames = {"id_usuario", "nombre"}))
 //lombok genera getters, setters, constructor y toString
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"usuario", "recetas"})
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"usuario", "recetas"})
 public class Coleccion {
 
     //atributos
@@ -25,7 +28,7 @@ public class Coleccion {
     @Column(name="id")
     private Integer id;
 
-    @Column(name="nombre", length = 150, nullable = false, unique = true)
+    @Column(name="nombre", length = 150, nullable = false)
     private String nombre;
 
     /*para indicar el nombre de las relaciones hay que indicar un objeto dentro de otro*/
@@ -42,7 +45,6 @@ public class Coleccion {
             joinColumns = @JoinColumn(name = "id_coleccion"),
             inverseJoinColumns = @JoinColumn(name = "id_receta")
     )
-
     private Set<Receta> recetas = new HashSet<>();
 
 }

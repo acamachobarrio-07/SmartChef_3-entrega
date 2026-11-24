@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface IColeccionService {
 
-    // Consultar las colecciones de un usuario con sus recetas
+    // consultar las colecciones de un usuario con sus recetas
     List<ColeccionResponse> obtenerColecciones(Integer idUsuario);
+
+    //guardar receta en coleccion, creándola sino existe
+
+    ColeccionResponse guardarReceta(Integer idUsuario, String nombreColeccion, Integer idReceta);
 
 }

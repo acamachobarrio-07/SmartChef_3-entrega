@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IColeccionRepository extends JpaRepository<Coleccion, Integer> {
@@ -30,4 +31,8 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Integer> 
     ORDER BY c.nombre ASC, r.nombre ASC
     """)
     List<FilaColeccionResponse> obtenerColeccionesConRecetasPorUsuario(@Param("idUsuario") Integer idUsuario);
+
+    //colección concreta de un usuario por su nombre
+
+    Optional<Coleccion> findByUsuarioIdAndNombreIgnoreCase(Integer idUsuario, String nombre);
 }

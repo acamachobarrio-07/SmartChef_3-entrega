@@ -2,19 +2,22 @@ package es.safareyes.smartchef.service.impl;
 
 import es.safareyes.smartchef.dtos.response.ColeccionResponse;
 import es.safareyes.smartchef.dtos.response.FilaColeccionResponse;
+import es.safareyes.smartchef.entity.Coleccion;
+import es.safareyes.smartchef.entity.Receta;
+import es.safareyes.smartchef.entity.Usuario;
+import es.safareyes.smartchef.exception.ElementoDuplicado;
+import es.safareyes.smartchef.exception.ReglaNegocioException;
 import es.safareyes.smartchef.exception.RelacionNoEncontrada;
 import es.safareyes.smartchef.mapper.IColeccionMapper;
 import es.safareyes.smartchef.repository.IColeccionRepository;
+import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IColeccionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -24,23 +27,24 @@ public class ColeccionServiceImpl implements IColeccionService {
     private IColeccionRepository coleccionRepository;
     private IUsuarioRepository usuarioRepository;
     private IColeccionMapper coleccionMapper;
+    private IRecetaRepository recetaRepository;
 
     // GET - Colecciones del usuario con sus recetas
     @Override
     public List<ColeccionResponse> obtenerColecciones(Integer idUsuario) {
 
-        // 1. Comprobar que el usuario existe
+        // comprobar que el usuario existe
         if (!usuarioRepository.existsById(idUsuario)) {
             throw new RelacionNoEncontrada(
                     "No existe el usuario con ID: " + idUsuario
             );
         }
 
-        // 2. Obtener las filas: una por cada pareja colección-receta
+        // obtener las filas
         List<FilaColeccionResponse> filas =
                 coleccionRepository.obtenerColeccionesConRecetasPorUsuario(idUsuario);
 
-        // 3. Agrupar las filas por colección
+        // 3. agrupar las filas por colección
         //    LinkedHashMap mantiene el orden de la consulta (por nombre)
         Map<Integer, ColeccionResponse> colecciones = new LinkedHashMap<>();
 
@@ -66,5 +70,63 @@ public class ColeccionServiceImpl implements IColeccionService {
 
         // 4. Devolver las colecciones como lista
         return new ArrayList<>(colecciones.values());
+    }
+
+    // PUT - Guardar receta en colección, creándola si no existe (RN-08)
+    @Override
+    @Transactional
+    public ColeccionResponse guardarReceta(Integer idUsuario, String nombreColeccion, Integer idReceta) {
+
+        // comprobar que el usuario existe
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe el usuario con ID: " + idUsuario
+                ));
+
+        //comprobar que la receta existe
+        Receta receta = recetaRepository.findById(idReceta)
+                .orElseThrow(() -> new RelacionNoEncontrada(
+                        "No existe la receta con ID: " + idReceta
+                ));
+
+        //comprobar si la receta esta retirada
+        if (Boolean.TRUE.equals(receta.getRetirada())) {
+            throw new ReglaNegocioException(
+                    "La receta " + receta.getNombre() + " está retirada y no se puede guardar"
+            );
+        }
+
+        Optional<Coleccion> existente =
+                coleccionRepository.findByUsuarioIdAndNombreIgnoreCase(idUsuario, nombreColeccion);
+
+        Coleccion coleccion;
+
+        if (existente.isPresent()) {
+            // ya existe esta colección por lo que nos quedamos con esta
+            coleccion = existente.get();
+        } else {
+            // no existe esta coleccion, la creamos y la guardamos
+            coleccion = new Coleccion();
+            coleccion.setNombre(nombreColeccion.trim());
+            coleccion.setUsuario(usuario);
+            coleccion = coleccionRepository.save(coleccion);
+        }
+
+        //comprobar si la receta ya está en la colección
+
+        boolean yaGuardada = coleccion.getRecetas().stream()
+                .anyMatch(r -> r.getId().equals(idReceta));
+
+        if (yaGuardada) {
+            throw new ElementoDuplicado(
+                    "La receta ya está guardada en la colección " + coleccion.getNombre()
+            );
+        }
+
+        //añadir la receta
+        coleccion.getRecetas().add(receta);
+
+        //devolver la receta convertida con el mapper
+        return coleccionMapper.aResponse(coleccion);
     }
 }
