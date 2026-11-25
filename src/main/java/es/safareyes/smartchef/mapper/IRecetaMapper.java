@@ -27,13 +27,13 @@ public interface IRecetaMapper {
     @Mapping(target = "dificultad", source = "ERecetaDificultad")
     RecetaResponse aResponseDesdeFiltro(DatosFiltradoReceta datos);
 
-    List<RecetaResponse> aResponseDesdeFiltroList(
-            List<DatosFiltradoReceta> datos
-    );
+    List<RecetaResponse> aResponseDesdeFiltroList(List<DatosFiltradoReceta> datos);
 
     // Convertir DTO de creación a entidad
+    // retirada se ignora: una receta nueva nunca nace retirada (vale false por defecto)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "calorias", ignore = true)
+    @Mapping(target = "retirada", ignore = true)
     @Mapping(target = "ERecetaDificultad", source = "dificultad")
     @Mapping(target = "ingredientesReceta", ignore = true)
     @Mapping(target = "pasos", ignore = true)
@@ -41,32 +41,28 @@ public interface IRecetaMapper {
     @Mapping(target = "colecciones", ignore = true)
     Receta toEntity(GuardarRecetaRequest dto);
 
-
     // Convertir los ingredientes de una receta a DTO
     @Mapping(target = "idIngrediente", source = "ingrediente.id")
     @Mapping(target = "nombre", source = "ingrediente.nombre")
     @Mapping(target = "tipoCantidad", source = "ingrediente.EIngredientesTipoCantidad")
     IngredienteRecetaResponse toIngredienteDto(IngredientesReceta ingredienteReceta);
 
-    List<IngredienteRecetaResponse> toIngredientesDto(
-            List<IngredientesReceta> ingredientes
-    );
+    List<IngredienteRecetaResponse> toIngredientesDto(List<IngredientesReceta> ingredientes);
 
     // Convertir los pasos de una receta a DTO
     PasoRecetaResponse toPasoDto(Paso paso);
 
     List<PasoRecetaResponse> toPasosDto(List<Paso> pasos);
 
-
-    //Actualizar una receta existente
-
+    // Actualizar una receta existente
+    // retirada se ignora: el PUT no puede retirar ni reactivar (eso es el PATCH)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "calorias", ignore = true)
+    @Mapping(target = "retirada", ignore = true)
     @Mapping(target = "ERecetaDificultad", source = "dificultad")
     @Mapping(target = "ingredientesReceta", ignore = true)
     @Mapping(target = "pasos", ignore = true)
     @Mapping(target = "fotos", ignore = true)
     @Mapping(target = "colecciones", ignore = true)
     void actualizarReceta(GuardarRecetaRequest dto, @MappingTarget Receta receta);
-
 }

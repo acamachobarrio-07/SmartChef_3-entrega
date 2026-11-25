@@ -21,7 +21,7 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
     // Comprobar si ya existe una receta con ese nombre
     Boolean existsByNombreIgnoreCase(String nombre);
 
-    //Catálogo con filtros
+    // Catálogo con filtros (RN-09: las retiradas no salen)
     @Query("""
     SELECT new es.safareyes.smartchef.dtos.DatosFiltradoReceta(
         r.id,
@@ -33,9 +33,9 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
         r.eRecetaDificultad
     )
     FROM Receta r
-    WHERE (:tiempoMax IS NULL OR r.tiempo <= :tiempoMax)
+    WHERE r.retirada = false
+      AND (:tiempoMax IS NULL OR r.tiempo <= :tiempoMax)
       AND (:dificultad IS NULL OR r.eRecetaDificultad = :dificultad)
-
       AND (:vegetariano IS NULL OR :vegetariano = false
           OR NOT EXISTS (
               SELECT ir.id
@@ -46,7 +46,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
                      es.safareyes.smartchef.entity.EPreferenciasTipo.VEGETARIANO
               WHERE ir.receta = r AND a.id IS NULL
           ))
-
       AND (:sinGluten IS NULL OR :sinGluten = false
           OR NOT EXISTS (
               SELECT ir.id
@@ -57,7 +56,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
                      es.safareyes.smartchef.entity.EPreferenciasTipo.SINGLUTEN
               WHERE ir.receta = r AND a.id IS NULL
           ))
-      
       AND (
           :economico IS NULL
           OR :economico = false
@@ -78,8 +76,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
               ) <= r.raciones * 2.50
           )
       )
-      
-
     ORDER BY r.nombre ASC, r.id ASC
     """)
     Page<DatosFiltradoReceta> buscarConFiltros(
@@ -91,10 +87,7 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             Pageable pageable
     );
 
-
-
-    //Detalle receta con ingredientes
-
+    // Detalle receta con ingredientes (Fase 2, lo usa TestDetalleReceta)
     @Query("""
     SELECT new es.safareyes.smartchef.dtos.DatosRecetaDetalle(
         r.id,
@@ -122,16 +115,17 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
     """)
     List<DatosRecetaDetalle> obtenerDetalleRecetaConIngredientes(@Param("idReceta") Integer idReceta);
 
-    // Buscar recetas con sus ingredientes
+    // Recetas NO retiradas con sus ingredientes (JOIN FETCH evita N+1) - endpoint 7
     @Query("""
             SELECT DISTINCT r
             FROM Receta r
             LEFT JOIN FETCH r.ingredientesReceta ir
             LEFT JOIN FETCH ir.ingrediente
+            WHERE r.retirada = false
             """)
     List<Receta> buscarRecetasConIngredientes();
 
-    // recetas mas cocinadas entre dos fechas
+    // Recetas más cocinadas entre dos fechas
     @Query("""
         SELECT new es.safareyes.smartchef.dtos.response.RecetaPopularResponse(
             r.id,
@@ -152,7 +146,7 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             Pageable pageable
     );
 
-    // recetas mas guardadas en colecciones
+    // Recetas más guardadas en colecciones
     @Query("""
         SELECT new es.safareyes.smartchef.dtos.response.RecetaPopularResponse(
             r.id,
@@ -166,7 +160,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
         ORDER BY COUNT(col.id) DESC, r.nombre ASC
         """)
     List<RecetaPopularResponse> buscarMasGuardadas(Pageable pageable);
-
 }
 
     //@Query("""

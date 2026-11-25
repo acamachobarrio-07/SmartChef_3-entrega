@@ -15,8 +15,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"alergias", "usuariosListaCompra", "ingredientesReceta", "despensas"})
-@ToString(exclude = {"alergias", "usuariosListaCompra", "ingredientesReceta", "despensas"})
+@EqualsAndHashCode(exclude = {"alergias"})
+@ToString(exclude = {"alergias"})
 public class Ingredientes {
 
     //atributos
@@ -47,7 +47,5 @@ public class Ingredientes {
             joinColumns = @JoinColumn(name = "id_ingredientes"),
             inverseJoinColumns = @JoinColumn(name = "id_preferencias")
     )
-
     private Set<Preferencias> alergias = new HashSet<>();
-
 }
