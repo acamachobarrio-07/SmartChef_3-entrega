@@ -28,6 +28,8 @@ import es.safareyes.smartchef.repository.IPasoRepository;
 import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IRecetaService;
+import es.safareyes.smartchef.entity.Preferencias;
+import es.safareyes.smartchef.entity.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,29 +60,64 @@ public class RecetaServiceImpl implements IRecetaService {
     private IDespensaRepository despensaRepository;
     private IIngredienteMapper ingredienteMapper;
 
-    // GET - Buscar recetas con filtros
+    // GET - Buscar recetas con filtros (RN-03 y RN-09)
     @Override
     public Page<RecetaResponse> buscarRecetas(RecetasRequest filtros) {
 
         int pagina = filtros.page() == null ? 0 : filtros.page();
         int tamano = filtros.size() == null ? 10 : filtros.size();
-
         Pageable pageable = PageRequest.of(pagina, tamano);
 
-        Integer tiempoMax = filtros.tiempoMax();
+        // 1. Filtros que vienen en la petición (pueden ser null)
+        Boolean vegetariano = filtros.vegetariano();
+        Boolean sinGluten = filtros.sinGluten();
+        Boolean rapido = filtros.rapido();
+        Boolean economico = filtros.economico();
 
-        if (Boolean.TRUE.equals(filtros.rapido())) {
+        // 2. RN-03: si se indica usuario, sus preferencias se aplican por defecto
+        //    SOLO en los filtros que la petición no indica
+        if (filtros.idUsuario() != null) {
+
+            Usuario usuario = usuarioRepository.findById(filtros.idUsuario())
+                    .orElseThrow(() -> new RelacionNoEncontrada(
+                            "No existe el usuario con ID: " + filtros.idUsuario()
+                    ));
+
+            // Pasamos las preferencias del perfil a un Set de enums
+            Set<EPreferenciasTipo> perfil = new HashSet<>();
+            for (Preferencias p : usuario.getPreferencias()) {
+                perfil.add(p.getEPreferenciasTipo());
+            }
+
+            if (vegetariano == null && perfil.contains(EPreferenciasTipo.VEGETARIANO)) {
+                vegetariano = true;
+            }
+            if (sinGluten == null && perfil.contains(EPreferenciasTipo.SINGLUTEN)) {
+                sinGluten = true;
+            }
+            if (rapido == null && perfil.contains(EPreferenciasTipo.RAPIDO)) {
+                rapido = true;
+            }
+            if (economico == null && perfil.contains(EPreferenciasTipo.ECONOMICO)) {
+                economico = true;
+            }
+        }
+
+        // 3. Rápida = 30 minutos o menos (RN-02)
+        Integer tiempoMax = filtros.tiempoMax();
+        if (Boolean.TRUE.equals(rapido)) {
             tiempoMax = tiempoMax == null
                     ? 30
                     : Math.min(tiempoMax, 30);
         }
 
+        // 4. Consultar (la consulta ya excluye las retiradas, RN-09)
         return recetaRepository.buscarConFiltros(
                 tiempoMax,
                 filtros.dificultad(),
-                filtros.vegetariano(),
-                filtros.sinGluten(),
-                filtros.economico(),
+                vegetariano,
+                sinGluten,
+                economico,
                 pageable
         ).map(recetaMapper::aResponseDesdeFiltro);
     }
