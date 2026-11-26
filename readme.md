@@ -85,7 +85,7 @@ La API queda en `http://localhost:8080` y la documentación en **http://localhos
 
 ## Diagrama E/R
 
-![Diagrama E/R](docs/diagrama_er.png)
+![Diagrama E/R](docs/diagrama e_r - smart_chef - AnaCamachoBarrio.png)
 
 Tablas principales: `usuario`, `preferencias`, `usuario_preferencias`, `receta`, `paso`, `ingredientes`, `ingredientes_receta`, `alergias`, `despensa`, `lista_compra`, `coleccion`, `coleccion_receta`, `cocina`, `foto`, `notificacion`.
 
