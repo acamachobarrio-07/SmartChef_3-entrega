@@ -1,4 +1,3 @@
-
 package es.safareyes.smartchef.repository;
 
 import es.safareyes.smartchef.entity.EEstadoLista;

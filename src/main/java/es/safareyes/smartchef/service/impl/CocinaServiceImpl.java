@@ -58,7 +58,7 @@ public class CocinaServiceImpl implements ICocinaService {
         LocalDateTime desde = lunes.atStartOfDay();
         LocalDateTime hasta = lunes.plusDays(7).atStartOfDay();
 
-        // 3. Calorías por día (consulta de la Fase 2)
+        // 3. Calorías por día (Q5: SELECT new con record)
         List<SemanaCaloriasResponse> totales =
                 cocinaRepository.obtenerResumenSemanal(idUsuario, desde, hasta);
 
@@ -73,7 +73,6 @@ public class CocinaServiceImpl implements ICocinaService {
 
         // 5. Construir los 7 días (los que no tienen registros, vacíos y a 0)
         List<DiaSemanaResponse> dias = new ArrayList<>();
-        long caloriasSemana = 0;
 
         for (int i = 0; i < 7; i++) {
 
@@ -99,8 +98,10 @@ public class CocinaServiceImpl implements ICocinaService {
                     .getDisplayName(TextStyle.FULL, Locale.of("es", "ES"));
 
             dias.add(new DiaSemanaResponse(actual, nombreDia, calorias, comidas));
-            caloriasSemana += calorias;
         }
+
+        // Total de la semana con la consulta nativa (Q3: DATE_TRUNC 'week')
+        long caloriasSemana = cocinaRepository.obtenerCaloriasSemana(idUsuario, lunes);
 
         // 6. Devolver la semana
         return new SemanaResponse(lunes, domingo, caloriasSemana, dias);

@@ -160,6 +160,33 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
         ORDER BY COUNT(col.id) DESC, r.nombre ASC
         """)
     List<RecetaPopularResponse> buscarMasGuardadas(Pageable pageable);
+
+
+    // Q3: SQL NATIVO con GROUP BY + HAVING (RN-04, endpoint 7 por usuario).
+    // LEFT JOIN despensa: si el ingrediente no está (o está caducado o a 0), d.id es NULL
+    // y COUNT(d.id) no lo cuenta. Así COUNT(ir.id) = total y COUNT(d.id) = coincidentes.
+    // HAVING filtra DESPUÉS de agrupar: solo recetas con MÁS del 50 %.
+    @Query(nativeQuery = true, value = """
+        SELECT
+            r.id                                          AS "idReceta",
+            COUNT(ir.id)                                  AS "total",
+            COUNT(d.id)                                   AS "coincidentes",
+            ROUND(COUNT(d.id) * 100.0 / COUNT(ir.id), 2)  AS "porcentaje"
+        FROM receta r
+        JOIN ingredientes_receta ir ON ir.id_receta = r.id
+        LEFT JOIN despensa d
+               ON d.id_ingredientes = ir.id_ingredientes
+              AND d.id_usuario = :idUsuario
+              AND d.cantidad > 0
+              AND (d.caducidad IS NULL OR d.caducidad >= CURRENT_DATE)
+        WHERE r.retirada = false
+        GROUP BY r.id
+        HAVING COUNT(d.id) * 2 > COUNT(ir.id)
+        ORDER BY "porcentaje" DESC, r.id ASC
+        """)
+    List<ICoincidenciaDespensaProyeccion> buscarCoincidenciasDespensa(
+            @Param("idUsuario") Integer idUsuario
+    );
 }
 
     //@Query("""
