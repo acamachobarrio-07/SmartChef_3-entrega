@@ -17,9 +17,10 @@ public record ComidaResponse(
         String receta,
 
         @Schema(description = "Calorías de la receta", example = "600")
-        Integer calorias
+        Integer calorias,
 
+        @Schema(description = "Si la receta está retirada (RN-09)", example = "false")
+        Boolean retirada
         
-
 ) {
 }

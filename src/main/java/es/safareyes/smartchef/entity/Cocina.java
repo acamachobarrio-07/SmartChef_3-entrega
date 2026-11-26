@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 //lombok genera getters, setters, constructor y toString
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"usuario", "receta"})
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"usuario", "receta"})
 public class Cocina {
 
     //atributos

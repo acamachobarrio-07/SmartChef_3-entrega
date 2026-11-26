@@ -84,11 +84,11 @@ public class CocinaServiceImpl implements ICocinaService {
                 if (registro.getFecha().toLocalDate().equals(actual)) {
                     comidas.add(new ComidaResponse(
                             registro.getId(),
-                            // El enum ya sabe su nombre: DESAYUNO, ALMUERZO o CENA
                             registro.getTipo() != null ? registro.getTipo().name() : null,
                             registro.getReceta().getId(),
                             registro.getReceta().getNombre(),
-                            registro.getReceta().getCalorias()
+                            registro.getReceta().getCalorias(),
+                            registro.getReceta().getRetirada()
                     ));
                 }
             }
