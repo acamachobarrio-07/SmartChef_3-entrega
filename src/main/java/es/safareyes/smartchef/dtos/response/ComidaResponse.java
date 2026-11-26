@@ -19,5 +19,7 @@ public record ComidaResponse(
         @Schema(description = "Calorías de la receta", example = "600")
         Integer calorias
 
+        
+
 ) {
 }
