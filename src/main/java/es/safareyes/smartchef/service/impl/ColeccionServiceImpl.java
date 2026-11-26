@@ -14,12 +14,14 @@ import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IColeccionService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class ColeccionServiceImpl implements IColeccionService {
@@ -110,6 +112,7 @@ public class ColeccionServiceImpl implements IColeccionService {
             coleccion.setNombre(nombreColeccion.trim());
             coleccion.setUsuario(usuario);
             coleccion = coleccionRepository.save(coleccion);
+            log.info("Colección '{}' creada para el usuario {}", coleccion.getNombre(), idUsuario);
         }
 
         //comprobar si la receta ya está en la colección
@@ -125,6 +128,8 @@ public class ColeccionServiceImpl implements IColeccionService {
 
         //añadir la receta
         coleccion.getRecetas().add(receta);
+
+        log.info("Receta {} guardada en la colección '{}' del usuario {}", idReceta, coleccion.getNombre(), idUsuario);
 
         //devolver la receta convertida con el mapper
         return coleccionMapper.aResponse(coleccion);

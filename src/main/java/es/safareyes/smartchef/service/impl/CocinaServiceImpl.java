@@ -18,6 +18,7 @@ import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.ICocinaService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import java.time.format.TextStyle;
 import java.util.*;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class CocinaServiceImpl implements ICocinaService {
@@ -140,6 +142,7 @@ public class CocinaServiceImpl implements ICocinaService {
         // 4. RN-07: si se pide, descontar de la despensa (nunca por debajo de 0)
         if (Boolean.TRUE.equals(datos.descontarDespensa())) {
             descontarDeDespensa(idUsuario, receta);
+            log.info("Despensa del usuario {} descontada con la receta {}", idUsuario, receta.getId());
         }
 
         // 5. Crear y guardar el registro
@@ -150,6 +153,8 @@ public class CocinaServiceImpl implements ICocinaService {
         registro.setFecha(datos.fecha());
 
         Cocina guardado = cocinaRepository.save(registro);
+        log.info("Registro creado: id={} usuario={} receta={} {} {}",
+                guardado.getId(), idUsuario, receta.getId(), guardado.getTipo(), dia);
 
         // 6. Devolver el registro creado
         return new RegistroResponse(

@@ -32,6 +32,7 @@ import es.safareyes.smartchef.service.IRecetaService;
 import es.safareyes.smartchef.entity.Preferencias;
 import es.safareyes.smartchef.entity.Usuario;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class RecetaServiceImpl implements IRecetaService {
@@ -247,6 +249,8 @@ public class RecetaServiceImpl implements IRecetaService {
         }
 
         pasoRepository.saveAll(pasos);
+
+        log.info("Receta creada: id={} nombre='{}'", recetaGuardada.getId(), recetaGuardada.getNombre());
 
         // 7. Convertir entidad a DTO de respuesta
         return recetaMapper.aResponse(recetaGuardada);
@@ -607,6 +611,7 @@ public class RecetaServiceImpl implements IRecetaService {
 
         // 11. Guardar la receta; cascade = ALL persiste los nuevos hijos
         Receta recetaGuardada = recetaRepository.save(receta);
+        log.info("Receta modificada: id={} nombre='{}'", recetaGuardada.getId(), recetaGuardada.getNombre());
         return recetaMapper.aResponse(recetaGuardada);
     }
 
@@ -634,6 +639,7 @@ public class RecetaServiceImpl implements IRecetaService {
 
         // 4. Guardar los cambios
         recetaRepository.save(receta);
+        log.info("Receta retirada (baja lógica): id={}", id);
     }
 
 }

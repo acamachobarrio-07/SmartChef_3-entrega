@@ -14,6 +14,7 @@ import es.safareyes.smartchef.repository.IRecetaRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IListaCompraService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class ListaCompraServiceImpl implements IListaCompraService {
@@ -162,6 +164,8 @@ public class ListaCompraServiceImpl implements IListaCompraService {
         List<ListaCompraIngredienteResponse> ingredientes =
                 listaCompraMapper.toDtoList(listaAbierta);
 
+        log.info("Lista de la compra del usuario {} actualizada con la receta {} ({} raciones)",
+                idUsuario, receta.getId(), request.raciones());
         //devolver lista abierta
         return new ListaCompraResponse(
                 idUsuario,
@@ -241,6 +245,9 @@ public class ListaCompraServiceImpl implements IListaCompraService {
         for (ListaCompra fila : filas) {
             fila.setEstado(EEstadoLista.CERRADA);
         }
+
+        log.info("Lista de la compra del usuario {} cerrada: {} líneas compradas de {}",
+                idUsuario, request.idsComprados().size(), filas.size());
 
         //devolvemos las listas cerradas
         return new ListaCompraResponse(

@@ -13,6 +13,7 @@ import es.safareyes.smartchef.repository.IIngredientesRepository;
 import es.safareyes.smartchef.repository.IUsuarioRepository;
 import es.safareyes.smartchef.service.IDespensaService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class DespensaServiceImpl implements IDespensaService {
 
@@ -81,6 +83,7 @@ public class DespensaServiceImpl implements IDespensaService {
         // 4. Cantidad 0: se elimina de la despensa (si estaba)
         if (datos.cantidad().compareTo(BigDecimal.ZERO) == 0) {
             existente.ifPresent(despensaRepository::delete);
+            log.info("Ingrediente {} eliminado de la despensa del usuario {}", idIngrediente, idUsuario);
             return null;
         }
 
@@ -97,6 +100,8 @@ public class DespensaServiceImpl implements IDespensaService {
         despensa.setCaducidad(datos.caducidad());
 
         // 7. Guardar y devolver el DTO
-        return despensaMapper.toDto(despensaRepository.save(despensa));
+        Despensa guardada = despensaRepository.save(despensa);
+        log.info("Despensa del usuario {}: ingrediente {} con cantidad {}", idUsuario, idIngrediente, guardada.getCantidad());
+        return despensaMapper.toDto(guardada);
     }
 }
