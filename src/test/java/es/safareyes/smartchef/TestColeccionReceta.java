@@ -9,6 +9,7 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 
 import java.util.List;
 
+// Endpoint 12 - GET /api/v1/colecciones (colecciones con sus recetas)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class TestColeccionReceta {
@@ -19,5 +20,7 @@ public class TestColeccionReceta {
     @Test
     void consultarColeccionesConRecetas() {
         List<FilaColeccionResponse> colecciones = repository.obtenerColeccionesConRecetasPorUsuario(2);
+
+        colecciones.forEach(System.out::println);
     }
 }

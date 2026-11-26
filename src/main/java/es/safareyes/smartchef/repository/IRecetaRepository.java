@@ -1,6 +1,7 @@
 package es.safareyes.smartchef.repository;
 
-import es.safareyes.smartchef.dtos.*;
+import es.safareyes.smartchef.dtos.ICoincidenciaDespensaProyeccion;
+import es.safareyes.smartchef.dtos.response.RecetaResponse;
 import es.safareyes.smartchef.entity.ERecetaDificultad;
 import es.safareyes.smartchef.entity.Receta;
 import org.springframework.data.domain.Page;
@@ -23,12 +24,12 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
 
     // Catálogo con filtros (RN-09: las retiradas no salen)
     @Query("""
-    SELECT new es.safareyes.smartchef.dtos.DatosFiltradoReceta(
+    SELECT new es.safareyes.smartchef.dtos.response.RecetaResponse(
         r.id,
         r.nombre,
         r.descripcion,
-        r.raciones,
         r.tiempo,
+        r.raciones,
         r.calorias,
         r.eRecetaDificultad
     )
@@ -78,7 +79,7 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
       )
     ORDER BY r.nombre ASC, r.id ASC
     """)
-    Page<DatosFiltradoReceta> buscarConFiltros(
+    Page<RecetaResponse> buscarConFiltros(
             @Param("tiempoMax") Integer tiempoMax,
             @Param("dificultad") ERecetaDificultad dificultad,
             @Param("vegetariano") Boolean vegetariano,
@@ -86,34 +87,6 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             @Param("economico") Boolean economico,
             Pageable pageable
     );
-
-    // Detalle receta con ingredientes (Fase 2, lo usa TestDetalleReceta)
-    @Query("""
-    SELECT new es.safareyes.smartchef.dtos.DatosRecetaDetalle(
-        r.id,
-        r.nombre,
-        r.calorias,
-        r.tiempo,
-        r.eRecetaDificultad,
-        r.descripcion,
-        listagg(
-            DISTINCT CONCAT(i.nombre, ' (', CAST(ir.cantidad AS String), ' ',
-                            CAST(i.eIngredientesTipoCantidad AS String), ')'),
-            ', '
-        ),
-        listagg(
-            DISTINCT CONCAT(CAST(p.numero AS String), '. ', p.descripcion),
-            ' | '
-        ) WITHIN GROUP (ORDER BY CONCAT(CAST(p.numero AS String), '. ', p.descripcion) ASC)
-    )
-    FROM Receta r
-    JOIN r.ingredientesReceta ir
-    JOIN ir.ingrediente i
-    LEFT JOIN r.pasos p
-    WHERE r.id = :idReceta
-    GROUP BY r.id, r.nombre, r.calorias, r.tiempo, r.eRecetaDificultad, r.descripcion
-    """)
-    List<DatosRecetaDetalle> obtenerDetalleRecetaConIngredientes(@Param("idReceta") Integer idReceta);
 
     // Recetas NO retiradas con sus ingredientes (JOIN FETCH evita N+1) - endpoint 7
     @Query("""

@@ -1,6 +1,5 @@
 package es.safareyes.smartchef.mapper;
 
-import es.safareyes.smartchef.dtos.DatosFiltradoReceta;
 import es.safareyes.smartchef.dtos.request.GuardarRecetaRequest;
 import es.safareyes.smartchef.dtos.response.IngredienteRecetaResponse;
 import es.safareyes.smartchef.dtos.response.PasoRecetaResponse;
@@ -20,14 +19,6 @@ public interface IRecetaMapper {
     // Convertir entidad a DTO de respuesta
     @Mapping(target = "dificultad", source = "ERecetaDificultad")
     RecetaResponse aResponse(Receta receta);
-
-    List<RecetaResponse> aResponseList(List<Receta> recetas);
-
-    // Convertir resultados del GET a DTO
-    @Mapping(target = "dificultad", source = "ERecetaDificultad")
-    RecetaResponse aResponseDesdeFiltro(DatosFiltradoReceta datos);
-
-    List<RecetaResponse> aResponseDesdeFiltroList(List<DatosFiltradoReceta> datos);
 
     // Convertir DTO de creación a entidad
     // retirada se ignora: una receta nueva nunca nace retirada (vale false por defecto)

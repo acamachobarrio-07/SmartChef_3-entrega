@@ -124,7 +124,7 @@ public class RecetaServiceImpl implements IRecetaService {
                 sinGluten,
                 economico,
                 pageable
-        ).map(recetaMapper::aResponseDesdeFiltro);
+        );
     }
 
     // POST - Crear una receta
