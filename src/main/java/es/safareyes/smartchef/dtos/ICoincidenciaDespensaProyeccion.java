@@ -7,10 +7,7 @@ import java.math.BigDecimal;
 public interface ICoincidenciaDespensaProyeccion {
 
     Integer getIdReceta();
-
     Long getTotal();            // ingredientes que tiene la receta
-
     Long getCoincidentes();     // de ellos, cuántos hay en la despensa
-
     BigDecimal getPorcentaje();
 }

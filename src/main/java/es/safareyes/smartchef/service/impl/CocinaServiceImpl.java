@@ -45,22 +45,22 @@ public class CocinaServiceImpl implements ICocinaService {
     @Override
     public SemanaResponse obtenerSemana(Integer idUsuario, LocalDate fecha) {
 
-        // 1. Comprobar que el usuario existe (404)
+        // Comprobar que el usuario existe (404)
         if (!usuarioRepository.existsById(idUsuario)) {
             throw new RelacionNoEncontrada("No existe el usuario con ID: " + idUsuario);
         }
 
-        // 2. Calcular el lunes y el domingo (si no llega fecha, la semana actual)
+        // calcular el lunes y el domingo (si no llega fecha, la semana actual)
         LocalDate dia = fecha == null ? LocalDate.now() : fecha;
         LocalDate lunes = dia.with(DayOfWeek.MONDAY);
         LocalDate domingo = lunes.plusDays(6);
 
-        // Las consultas usan LocalDateTime: desde el lunes a las 00:00
+        // las consultas usan LocalDateTime: desde el lunes a las 00:00
         // hasta el lunes siguiente a las 00:00 (sin incluirlo)
         LocalDateTime desde = lunes.atStartOfDay();
         LocalDateTime hasta = lunes.plusDays(7).atStartOfDay();
 
-        // 3. Calorías por día (Q5: SELECT new con record)
+        // calorías por día (Q5: SELECT new con record)
         List<SemanaCaloriasResponse> totales =
                 cocinaRepository.obtenerResumenSemanal(idUsuario, desde, hasta);
 
@@ -69,11 +69,11 @@ public class CocinaServiceImpl implements ICocinaService {
             caloriasPorDia.put(total.dia(), total.caloriasTotales());
         }
 
-        // 4. Registros de la semana con su receta
+        // registros de la semana con su receta
         List<Cocina> registros =
                 cocinaRepository.buscarRegistrosSemana(idUsuario, desde, hasta);
 
-        // 5. Construir los 7 días (los que no tienen registros, vacíos y a 0)
+        // construir los 7 días (los que no tienen registros, vacíos y a 0)
         List<DiaSemanaResponse> dias = new ArrayList<>();
 
         for (int i = 0; i < 7; i++) {
@@ -102,10 +102,10 @@ public class CocinaServiceImpl implements ICocinaService {
             dias.add(new DiaSemanaResponse(actual, nombreDia, calorias, comidas));
         }
 
-        // Total de la semana con la consulta nativa (Q3: DATE_TRUNC 'week')
+        // total de la semana con la consulta nativa (Q3: DATE_TRUNC 'week')
         long caloriasSemana = cocinaRepository.obtenerCaloriasSemana(idUsuario, lunes);
 
-        // 6. Devolver la semana
+        // Devolver la semana
         return new SemanaResponse(lunes, domingo, caloriasSemana, dias);
     }
 
@@ -113,21 +113,20 @@ public class CocinaServiceImpl implements ICocinaService {
     @Override
     @Transactional
     public RegistroResponse registrar(Integer idUsuario, RegistroRequest datos) {
-
-        // 1. Comprobar que el usuario existe (404)
+        // comprobar que el usuario existe (404)
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe el usuario con ID: " + idUsuario
                 ));
 
-        // 2. Comprobar que la receta existe (404)
+        // comprobar que la receta existe (404)
         Receta receta = recetaRepository.findById(datos.idReceta())
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe la receta con ID: " + datos.idReceta()
                 ));
 
-        // 3. RN-07: un registro por día y tipo de comida (409)
-        //    El día va desde las 00:00 hasta las 23:59:59
+        // RN-07: un registro por día y tipo de comida (409)
+        //    el día va desde las 00:00 hasta las 23:59:59
         LocalDate dia = datos.fecha().toLocalDate();
         LocalDateTime inicioDia = dia.atStartOfDay();
         LocalDateTime finDia = dia.atTime(LocalTime.MAX);
@@ -139,13 +138,13 @@ public class CocinaServiceImpl implements ICocinaService {
             );
         }
 
-        // 4. RN-07: si se pide, descontar de la despensa (nunca por debajo de 0)
+        // RN-07: si se pide, descontar de la despensa (nunca por debajo de 0)
         if (Boolean.TRUE.equals(datos.descontarDespensa())) {
             descontarDeDespensa(idUsuario, receta);
             log.info("Despensa del usuario {} descontada con la receta {}", idUsuario, receta.getId());
         }
 
-        // 5. Crear y guardar el registro
+        // crear y guardar el registro
         Cocina registro = new Cocina();
         registro.setUsuario(usuario);
         registro.setReceta(receta);
@@ -156,7 +155,7 @@ public class CocinaServiceImpl implements ICocinaService {
         log.info("Registro creado: id={} usuario={} receta={} {} {}",
                 guardado.getId(), idUsuario, receta.getId(), guardado.getTipo(), dia);
 
-        // 6. Devolver el registro creado
+        // devolver el registro creado
         return new RegistroResponse(
                 guardado.getId(),
                 guardado.getFecha(),
@@ -168,7 +167,7 @@ public class CocinaServiceImpl implements ICocinaService {
         );
     }
 
-    // Resta de la despensa los ingredientes de la receta, sin bajar nunca de 0
+    // resta de la despensa los ingredientes de la receta, sin bajar nunca de 0
     private void descontarDeDespensa(Integer idUsuario, Receta receta) {
 
         for (IngredientesReceta ir : receta.getIngredientesReceta()) {

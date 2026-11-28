@@ -11,12 +11,12 @@ import java.util.List;
 
 public interface IIngredienteMapper {
 
-    // Convertir entidad a DTO de respuesta
+    // convertir entidad a DTO de respuesta
     @Mapping(target = "tipoCantidad",
             source = "EIngredientesTipoCantidad")
     IngredienteResponse toDto(Ingredientes ingrediente);
 
-    // Convertir una lista de entidades a DTO
+    // convertir una lista de entidades a DTO
     List<IngredienteResponse> toDtoList(
             List<Ingredientes> ingredientes
     );

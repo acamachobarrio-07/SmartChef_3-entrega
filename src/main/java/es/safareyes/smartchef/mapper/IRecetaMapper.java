@@ -16,11 +16,11 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface IRecetaMapper {
 
-    // Convertir entidad a DTO de respuesta
+    // convertir entidad a DTO de respuesta
     @Mapping(target = "dificultad", source = "ERecetaDificultad")
     RecetaResponse aResponse(Receta receta);
 
-    // Convertir DTO de creación a entidad
+    // convertir DTO de creación a entidad
     // retirada se ignora: una receta nueva nunca nace retirada (vale false por defecto)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "calorias", ignore = true)
@@ -32,7 +32,7 @@ public interface IRecetaMapper {
     @Mapping(target = "colecciones", ignore = true)
     Receta toEntity(GuardarRecetaRequest dto);
 
-    // Convertir los ingredientes de una receta a DTO
+    // convertir los ingredientes de una receta a DTO
     @Mapping(target = "idIngrediente", source = "ingrediente.id")
     @Mapping(target = "nombre", source = "ingrediente.nombre")
     @Mapping(target = "tipoCantidad", source = "ingrediente.EIngredientesTipoCantidad")
@@ -40,12 +40,12 @@ public interface IRecetaMapper {
 
     List<IngredienteRecetaResponse> toIngredientesDto(List<IngredientesReceta> ingredientes);
 
-    // Convertir los pasos de una receta a DTO
+    // convertir los pasos de una receta a DTO
     PasoRecetaResponse toPasoDto(Paso paso);
 
     List<PasoRecetaResponse> toPasosDto(List<Paso> pasos);
 
-    // Actualizar una receta existente
+    // actualizar una receta existente
     // retirada se ignora: el PUT no puede retirar ni reactivar (eso es el PATCH)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "calorias", ignore = true)

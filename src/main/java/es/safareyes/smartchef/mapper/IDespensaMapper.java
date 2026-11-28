@@ -9,10 +9,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = IIngredienteMapper.class)
 public interface IDespensaMapper {
 
-    // Convertir una entidad Despensa a su DTO
+    // convertir una entidad Despensa a su DTO
     DespensaResponse toDto(Despensa despensa);
 
-    // Convertir una lista de despensas a DTOs
+    // convertir una lista de despensas a DTOs
     List<DespensaResponse> toDtoList(List<Despensa> despensas);
 
 }

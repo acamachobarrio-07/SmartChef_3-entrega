@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class InformeServiceImpl implements IInformeService {
 
-    // Cuántas recetas salen en cada ranking
+    // cuántas recetas salen en cada ranking
     private static final int TOP_RECETAS = 10;
 
     private IRecetaRepository recetaRepository;

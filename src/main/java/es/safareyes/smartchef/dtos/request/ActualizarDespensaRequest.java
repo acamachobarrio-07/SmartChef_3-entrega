@@ -12,7 +12,7 @@ public record ActualizarDespensaRequest(
         @DecimalMin(value = "0.0", message = "La cantidad no puede ser negativa")
         BigDecimal cantidad,
 
-        // Opcional: hay ingredientes sin fecha de caducidad (sal, aceite...)
+        // opcional porque hay ingredientes sin fecha de caducidad como la sal o el aceite
         LocalDate caducidad
 ) {
 }

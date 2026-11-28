@@ -11,26 +11,15 @@
       "name": "01 - Recetas - Filtros",
       "item": [
         {
-          "name": "Casos correctos (200)",
+          "name": "Casos correctos",
           "item": [
             {
-              "name": "Buscar recetas con filtros",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Las recetas cumplen tiempo y dificultad\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.content).to.be.an(\"array\");\r\n    pm.expect(respuesta.content.length).to.be.greaterThan(0);\r\n\r\n    respuesta.content.forEach(function (receta) {\r\n        pm.expect(receta.tiempo).to.be.at.most(30);\r\n        pm.expect(receta.dificultad).to.eql(\"FACIL\");\r\n    });\r\n});\r\n\r\npm.test(\"Paginación correcta\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.number).to.eql(0);\r\n    pm.expect(respuesta.size).to.eql(10);\r\n    pm.expect(respuesta.content.length).to.be.at.most(10);\r\n});\r\n"
-                    ]
-                  }
-                }
-              ],
+              "name": "Catálogo con todos los filtros",
               "request": {
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/recetas?tiempoMax=30&dificultad=MEDIO&page=0&size=10",
+                  "raw": "http://localhost:8080/api/v1/recetas?tiempoMax=30&dificultad=FACIL&vegetariano=true&sinGluten=true&page=0&size=10",
                   "protocol": "http",
                   "host": [
                     "localhost"
@@ -48,17 +37,15 @@
                     },
                     {
                       "key": "dificultad",
-                      "value": "MEDIO"
+                      "value": "FACIL"
                     },
                     {
                       "key": "vegetariano",
-                      "value": "true",
-                      "disabled": true
+                      "value": "true"
                     },
                     {
                       "key": "sinGluten",
-                      "value": "true",
-                      "disabled": true
+                      "value": "true"
                     },
                     {
                       "key": "page",
@@ -74,149 +61,7 @@
               "response": []
             },
             {
-              "name": "Buscar recetas ecnonomicas",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Devuelve una lista de recetas\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.content).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Paginación correcta\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.number).to.eql(0);\r\n    pm.expect(respuesta.size).to.eql(10);\r\n    pm.expect(respuesta.content.length).to.be.at.most(10);\r\n});\r\n"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:8080/api/v1/recetas?page=0&size=10&economico=true",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "8080",
-                  "path": [
-                    "api",
-                    "v1",
-                    "recetas"
-                  ],
-                  "query": [
-                    {
-                      "key": "tiempoMax",
-                      "value": "30",
-                      "disabled": true
-                    },
-                    {
-                      "key": "dificultad",
-                      "value": "FACIL",
-                      "disabled": true
-                    },
-                    {
-                      "key": "vegetariano",
-                      "value": "true",
-                      "disabled": true
-                    },
-                    {
-                      "key": "sinGluten",
-                      "value": "true",
-                      "disabled": true
-                    },
-                    {
-                      "key": "page",
-                      "value": "0"
-                    },
-                    {
-                      "key": "size",
-                      "value": "10"
-                    },
-                    {
-                      "key": "economico",
-                      "value": "true"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Buscar recetas rápidas",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Todas las recetas son rápidas\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.content).to.be.an(\"array\");\r\n    pm.expect(respuesta.content.length).to.be.greaterThan(0);\r\n\r\n    respuesta.content.forEach(function (receta) {\r\n        pm.expect(receta.tiempo).to.be.at.most(30);\r\n    });\r\n});\r\n\r\npm.test(\"Paginación correcta\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.number).to.eql(0);\r\n    pm.expect(respuesta.size).to.eql(10);\r\n    pm.expect(respuesta.content.length).to.be.at.most(10);\r\n});\r\n"
-                    ]
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "http://localhost:8080/api/v1/recetas?sinGluten=true&page=0&size=10&rapido=true",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "8080",
-                  "path": [
-                    "api",
-                    "v1",
-                    "recetas"
-                  ],
-                  "query": [
-                    {
-                      "key": "tiempoMax",
-                      "value": "30",
-                      "disabled": true
-                    },
-                    {
-                      "key": "dificultad",
-                      "value": "FACIL",
-                      "disabled": true
-                    },
-                    {
-                      "key": "vegetariano",
-                      "value": "true",
-                      "disabled": true
-                    },
-                    {
-                      "key": "sinGluten",
-                      "value": "true"
-                    },
-                    {
-                      "key": "page",
-                      "value": "0"
-                    },
-                    {
-                      "key": "size",
-                      "value": "10"
-                    },
-                    {
-                      "key": "rapido",
-                      "value": "true"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Buscar recetas sin filtros",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Devuelve el catálogo de recetas\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.content).to.be.an(\"array\");\r\n    pm.expect(respuesta.content.length).to.be.greaterThan(0);\r\n    pm.expect(respuesta.totalElements).to.be.greaterThan(0);\r\n});\r\n\r\npm.test(\"Aplica la paginación predeterminada\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.number).to.eql(0);\r\n    pm.expect(respuesta.size).to.eql(10);\r\n    pm.expect(respuesta.content.length).to.be.at.most(10);\r\n});\r\n"
-                    ]
-                  }
-                }
-              ],
+              "name": "Catálogo sin filtros",
               "request": {
                 "method": "GET",
                 "header": [],
@@ -231,61 +76,18 @@
                     "api",
                     "v1",
                     "recetas"
-                  ],
-                  "query": [
-                    {
-                      "key": "tiempoMax",
-                      "value": "30",
-                      "disabled": true
-                    },
-                    {
-                      "key": "dificultad",
-                      "value": "FACIL",
-                      "disabled": true
-                    },
-                    {
-                      "key": "vegetariano",
-                      "value": "true",
-                      "disabled": true
-                    },
-                    {
-                      "key": "sinGluten",
-                      "value": "true",
-                      "disabled": true
-                    },
-                    {
-                      "key": "page",
-                      "value": "0",
-                      "disabled": true
-                    },
-                    {
-                      "key": "size",
-                      "value": "10",
-                      "disabled": true
-                    }
                   ]
                 }
               },
               "response": []
             },
             {
-              "name": "Buscar recetas sin resultados",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "type": "text/javascript",
-                    "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"No se encontraron recetas\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.content).to.be.an(\"array\").that.is.empty;\r\n    pm.expect(respuesta.totalElements).to.eql(0);\r\n});\r\n"
-                    ]
-                  }
-                }
-              ],
+              "name": "Catálogo vegetariano y sin gluten",
               "request": {
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/recetas?tiempoMax=1&dificultad=DIFICIL",
+                  "raw": "http://localhost:8080/api/v1/recetas?vegetariano=true&sinGluten=true",
                   "protocol": "http",
                   "host": [
                     "localhost"
@@ -298,22 +100,43 @@
                   ],
                   "query": [
                     {
-                      "key": "tiempoMax",
-                      "value": "1"
-                    },
-                    {
-                      "key": "dificultad",
-                      "value": "DIFICIL"
-                    },
-                    {
                       "key": "vegetariano",
-                      "value": "true",
-                      "disabled": true
+                      "value": "true"
                     },
                     {
                       "key": "sinGluten",
-                      "value": "true",
-                      "disabled": true
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Catálogo rápida y dificultad facil",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas?rapido=true&dificultad=FACIL&size=5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "rapido",
+                      "value": "true"
+                    },
+                    {
+                      "key": "dificultad",
+                      "value": "FACIL"
                     },
                     {
                       "key": "page",
@@ -322,8 +145,34 @@
                     },
                     {
                       "key": "size",
-                      "value": "10",
-                      "disabled": true
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario con filtros vegetariano y sin gluten",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
                     }
                   ]
                 }
@@ -333,7 +182,7 @@
           ]
         },
         {
-          "name": "- Casos de error (400)",
+          "name": "Casos de error",
           "item": [
             {
               "name": "Error página negativa",
@@ -343,7 +192,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Error por página negativa\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.errores.page)\r\n        .to.eql(\"La página no puede ser negativa\");\r\n});\r\n"
+                      ""
                     ]
                   }
                 }
@@ -406,7 +255,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Error por tamaño inválido\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.errores.size)\r\n        .to.eql(\"El tamaño debe ser al menos 1\");\r\n});\r\n"
+                      ""
                     ]
                   }
                 }
@@ -469,7 +318,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "\r\npm.test(\"Respuesta HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Error por tiempo negativo\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.errores.tiempoMax)\r\n        .to.eql(\"El tiempo debe ser mayor que 0\");\r\n});\r\n"
+                      ""
                     ]
                   }
                 }
@@ -532,257 +381,267 @@
       "name": "02 - Recetas - ID",
       "item": [
         {
-          "name": "Id - Receta apta para todos los filtros",
-          "event": [
+          "name": "Casos correctos",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Estado HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"Receta vegetariana\", function () {\r\n    pm.expect(datos.vegetariano).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta sin gluten\", function () {\r\n    pm.expect(datos.sinGluten).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta rápida\", function () {\r\n    pm.expect(datos.rapido).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta económica\", function () {\r\n    pm.expect(datos.economico).to.eql(true);\r\n});\r\n\r\npm.test(\"Coste por ración correcto\", function () {\r\n    pm.expect(Number(datos.costePorRacion)).to.eql(0.56);\r\n});\r\n\r\npm.test(\"Contiene ingredientes\", function () {\r\n    pm.expect(datos.ingredientes.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Contiene pasos ordenados\", function () {\r\n    const numeros = datos.pasos.map(paso => paso.numero);\r\n\r\n    pm.expect(numeros).to.have.length.above(0);\r\n\r\n    numeros.forEach((numero, indice) => {\r\n        pm.expect(numero).to.eql(indice + 1);\r\n    });\r\n});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/5",
-              "protocol": "http",
-              "host": [
-                "localhost"
+              "name": "Id - Receta apta casi todos los filtros",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"Receta vegetariana\", function () {\r\n    pm.expect(datos.vegetariano).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta sin gluten\", function () {\r\n    pm.expect(datos.sinGluten).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta rápida\", function () {\r\n    pm.expect(datos.rapido).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta económica\", function () {\r\n    pm.expect(datos.economico).to.eql(true);\r\n});\r\n\r\npm.test(\"Coste por ración correcto\", function () {\r\n    pm.expect(Number(datos.costePorRacion)).to.eql(0.56);\r\n});\r\n\r\npm.test(\"Contiene ingredientes\", function () {\r\n    pm.expect(datos.ingredientes.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Contiene pasos ordenados\", function () {\r\n    const numeros = datos.pasos.map(paso => paso.numero);\r\n\r\n    pm.expect(numeros).to.have.length.above(0);\r\n\r\n    numeros.forEach((numero, indice) => {\r\n        pm.expect(numero).to.eql(indice + 1);\r\n    });\r\n});"
+                    ]
+                  }
+                }
               ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "5"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta NO apta para todos los filtros",
-          "event": [
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "5"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Estado HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"Receta vegetariana\", function () {\r\n    pm.expect(datos.vegetariano).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta sin gluten\", function () {\r\n    pm.expect(datos.sinGluten).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta rápida\", function () {\r\n    pm.expect(datos.rapido).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta económica\", function () {\r\n    pm.expect(datos.economico).to.eql(true);\r\n});\r\n\r\npm.test(\"Coste por ración correcto\", function () {\r\n    pm.expect(Number(datos.costePorRacion)).to.eql(0.56);\r\n});\r\n\r\npm.test(\"Contiene ingredientes\", function () {\r\n    pm.expect(datos.ingredientes.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Contiene pasos ordenados\", function () {\r\n    const numeros = datos.pasos.map(paso => paso.numero);\r\n\r\n    pm.expect(numeros).to.have.length.above(0);\r\n\r\n    numeros.forEach((numero, indice) => {\r\n        pm.expect(numero).to.eql(indice + 1);\r\n    });\r\n});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/62",
-              "protocol": "http",
-              "host": [
-                "localhost"
+              "name": "Id - Receta APTA  todos los filtros",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Estado HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"Receta vegetariana\", function () {\r\n    pm.expect(datos.vegetariano).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta sin gluten\", function () {\r\n    pm.expect(datos.sinGluten).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta rápida\", function () {\r\n    pm.expect(datos.rapido).to.eql(true);\r\n});\r\n\r\npm.test(\"Receta económica\", function () {\r\n    pm.expect(datos.economico).to.eql(true);\r\n});\r\n\r\npm.test(\"Coste por ración correcto\", function () {\r\n    pm.expect(Number(datos.costePorRacion)).to.eql(0.56);\r\n});\r\n\r\npm.test(\"Contiene ingredientes\", function () {\r\n    pm.expect(datos.ingredientes.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Contiene pasos ordenados\", function () {\r\n    const numeros = datos.pasos.map(paso => paso.numero);\r\n\r\n    pm.expect(numeros).to.have.length.above(0);\r\n\r\n    numeros.forEach((numero, indice) => {\r\n        pm.expect(numero).to.eql(indice + 1);\r\n    });\r\n});"
+                    ]
+                  }
+                }
               ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "62"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Vegetariana con gluten",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/63",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "63"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta no existente",
-          "event": [
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/62",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "62"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "\r\npm.test(\"Estado HTTP 404 Not Found\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"El estado del error es 404\", function () {\r\n    pm.expect(datos.status).to.eql(404);\r\n});\r\n\r\npm.test(\"El mensaje indica que la receta no existe\", function () {\r\n    pm.expect(datos.detail).to.include(\"No existe una receta\");\r\n});\r\n"
-                ]
-              }
+              "name": "Id - Vegetariana con gluten",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/63",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "63"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Receta No vegetariana sin gluten",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/64",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "64"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Receta No vegetariana Con gluten",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/65",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "65"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Receta vegetariana cara y lenta",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/67",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "67"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Receta No vegetariana cara y lenta",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/66",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "66"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Ingrediente de prueba sin etiquetar",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/68",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "68"
+                  ]
+                }
+              },
+              "response": []
             }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/999",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "999"
-              ]
-            }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Id - Receta con formato incorrecto",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/abcç",
-              "protocol": "http",
-              "host": [
-                "localhost"
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Id - Receta no existente",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\npm.test(\"Estado HTTP 404 Not Found\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\nconst datos = pm.response.json();\r\n\r\npm.test(\"El estado del error es 404\", function () {\r\n    pm.expect(datos.status).to.eql(404);\r\n});\r\n\r\npm.test(\"El mensaje indica que la receta no existe\", function () {\r\n    pm.expect(datos.detail).to.include(\"No existe una receta\");\r\n});\r\n"
+                    ]
+                  }
+                }
               ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "abcç"
-              ]
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "999"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id - Receta con formato incorrecto",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/abcç",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "abcç"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta No vegetariana sin gluten",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/64",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "64"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta No vegetariana Con gluten",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/65",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "65"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta No vegetariana cara y lenta",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/66",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "66"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Receta vegetariana cara y lenta",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/67",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "67"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Id - Ingrediente de prueba sin etiquetar",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/68",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "68"
-              ]
-            }
-          },
-          "response": []
+          ]
         }
       ]
     },
@@ -790,226 +649,254 @@
       "name": "03 - Recetas - Crear",
       "item": [
         {
-          "name": "Publicar receta",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\r\n{\r\n  \"nombre\": \"Tortilla de champiñones con queso y tomate - Test POST 05\",\r\n  \"descripcion\": \"Tortilla casera con champiñones salteados, queso fundido y tomate fresco.\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 20,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 3\r\n    },\r\n    {\r\n      \"idIngrediente\": 19,\r\n      \"cantidad\": 150\r\n    },\r\n    {\r\n      \"idIngrediente\": 3,\r\n      \"cantidad\": 60\r\n    },\r\n    {\r\n      \"idIngrediente\": 7,\r\n      \"cantidad\": 120\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Lavar y cortar los champiñones y el tomate en trozos pequeños.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Saltear los champiñones en una sartén hasta que estén tiernos.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Batir los huevos y añadir los champiñones y el queso.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Verter la mezcla en la sartén y cocinar la tortilla por ambos lados.\"\r\n    },\r\n    {\r\n      \"numero\": 5,\r\n      \"descripcion\": \"Servir la tortilla acompañada del tomate fresco.\"\r\n    }\r\n  ]\r\n}\r\n\r\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "crear"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Publicar receta error",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"nombre\": \"Huevos rellenos de aguacate y queso - Test POST 03\",\r\n  \"descripcion\": \"Huevos cocidos rellenos de una mezcla cremosa de aguacate y queso, ideales como entrante.\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 20,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 4\r\n    },\r\n    {\r\n      \"idIngrediente\": 5,\r\n      \"cantidad\": 1\r\n    },\r\n    {\r\n      \"idIngrediente\": 3,\r\n      \"cantidad\": 50\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Cocer los huevos durante 10 minutos y dejarlos enfriar.\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Pelar los huevos, cortarlos por la mitad y retirar las yemas.\"\r\n    },\r\n    {\r\n      \"numero\": 3,\r\n      \"descripcion\": \"Triturar el aguacate junto con las yemas y el queso.\"\r\n    },\r\n    {\r\n      \"numero\": 4,\r\n      \"descripcion\": \"Rellenar las claras con la mezcla y servir.\"\r\n    }\r\n  ]\r\n}\r\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "crear"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "06 - Ingredientes",
-      "item": [
-        {
-          "name": "Ingredientes - Catálogo completo",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/ingredientes",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "ingredientes"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Ingredientes - Buscar ingrediente",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/ingredientes?texto=tomate&page=0&size=10",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "ingredientes"
-              ],
-              "query": [
-                {
-                  "key": "texto",
-                  "value": "tomate"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Publicar receta",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - Grabación\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 3 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 60 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
-                {
-                  "key": "page",
-                  "value": "0"
-                },
-                {
-                  "key": "size",
-                  "value": "10"
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
                 }
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "07 - Buscar recetas por ingredientes",
-      "item": [
-        {
-          "name": "Buscar receta por ingredientes",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"idsIngredientes\": [1, 2, 3, 4, 5]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "buscar-por-ingredientes"
-              ]
-            }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Buscar receta por usuario (despensa)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"idUsuario\": 2\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Nombre repetido",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - Grabación\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 3 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 60 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "buscar-por-ingredientes"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "08 - Despensa por usuario",
-      "item": [
-        {
-          "name": "Despensa por usuario",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/despensa?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "despensa"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+            {
+              "name": "Pasos con huecos",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Receta pasos con huecos\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 3 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 60 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Paso uno\" },\r\n    { \"numero\": 3, \"descripcion\": \"Paso tres\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Ingrediente repetido",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - Grabación\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 2 },\r\n    { \"idIngrediente\": 1, \"cantidad\": 5 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ingrediente que no existe",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"xx\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 99999999, \"cantidad\": 3 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mas de 12 raciones",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - 1\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 3 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 60 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Receta sin ingredientes",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - xx\",\r\n  \"descripcion\": \"Ensalada fresca de garbanzos con verduras\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 15,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Lavar y cortar las verduras\" },\r\n    { \"numero\": 2, \"descripcion\": \"Mezclar con los garbanzos y aliñar\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "JSON mal formado",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"nombre\": \"Mal\", \r\n\"raciones\": }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         }
       ]
     },
@@ -1017,187 +904,1192 @@
       "name": "04 - Recetas - Modificar",
       "item": [
         {
-          "name": "Modificar receta",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"nombre\": \"Receta modificada de prueba\",\r\n  \"descripcion\": \"Receta actualizada desde Postman\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 50\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Preparar los ingredientes\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Cocinar y servir\"\r\n    }\r\n  ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Modificar receta",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Ensalada de garbanzos - Prueba\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 4,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
                 }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/recetas/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "recetas",
-                "1"
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Receta inexistente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Receta modificada de prueba\",\r\n  \"descripcion\": \"Receta actualizada desde Postman\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 50\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Preparar los ingredientes\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Cocinar y servir\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/9999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "9999"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Nombre de otra receta",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Porridge de avena con plátano\",\r\n  \"descripcion\": \"Receta actualizada desde Postman\",\r\n  \"raciones\": 2,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"FACIL\",\r\n  \"ingredientes\": [\r\n    {\r\n      \"idIngrediente\": 1,\r\n      \"cantidad\": 100\r\n    },\r\n    {\r\n      \"idIngrediente\": 2,\r\n      \"cantidad\": 50\r\n    }\r\n  ],\r\n  \"pasos\": [\r\n    {\r\n      \"numero\": 1,\r\n      \"descripcion\": \"Preparar los ingredientes\"\r\n    },\r\n    {\r\n      \"numero\": 2,\r\n      \"descripcion\": \"Cocinar y servir\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Pasos con hueco",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"a\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 4,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [ { \"numero\": 1, \"descripcion\": \"Uno\" }, { \"numero\": 3, \"descripcion\": \"Tres\" } ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mas de 12 raciones",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "error id",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/abs",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "abs"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
     {
       "name": "05 - Eliminar receta (lógica)",
-      "item": []
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Retirar receta",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Retirar otra vez",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Receta inexistente",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/9999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "9999"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id no numérico",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/abc",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "abc"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Ingredientes",
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Catálogo completo",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar por ingrediente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?texto=tomate",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "texto",
+                      "value": "tomate"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mostrar la segunda página",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?page=1&size=5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "size",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Sin resultados",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?texto=zzzzzzz",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "texto",
+                      "value": "zzzzzzz"
+                    },
+                    {
+                      "key": "",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Tamaño 0",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?size=0",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "size",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Tamaño mayor que 100",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?size=101",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "size",
+                      "value": "101"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Página negativa",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/ingredientes?page=-1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingredientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "-1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 - Buscar recetas por ingredientes",
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Buscar receta por ingredientes",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idsIngredientes\": [1, 2, 3, 4, 5]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar receta por usuario (despensa)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idUsuario\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Usuario e ingredientes a la vez",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idUsuario\": 2, \r\n\"idsIngredientes\": [1, 2] \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ni usuarios ni ingredientes",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idUsuario\": 999999 }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Id ingrediente negativo",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idsIngredientes\": [1, -3] }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/recetas/buscar-por-ingredientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "recetas",
+                    "buscar-por-ingredientes"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 - Despensa por usuario",
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Despensa por usuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Despensa sin usuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Despensa con usuario inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa?idUsuario=999999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "999999"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Despensa con usuario inexistente Copy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa?idUsuario=abc",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "abc"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "09 - Despensa - Actualizar",
       "item": [
         {
-          "name": "Despensa - Añadir nuevo ingrediente",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \r\n    \"cantidad\": 500, \r\n    \"caducidad\": \"2026-11-25\" \r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Despensa - Añadir o actualizar nuevo ingrediente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \r\n    \"cantidad\": 500, \r\n    \"caducidad\": \"2026-12-15\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "5"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "despensa",
-                "5"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+            {
+              "name": "Despensa - Sin caducidad",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \r\n    \"cantidad\": 250\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "5"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Despensa - Eliminar con cantidad 0",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \r\n    \"cantidad\": 0, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "5"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Despensa - Actualizar nuevo ingrediente",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \r\n    \"cantidad\": 250, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Cantidad negativa",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \r\n    \"cantidad\": -5, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "5"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "despensa",
-                "5"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+            {
+              "name": "Fecha con formato incorrecto",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{   \r\n    \"cantidad\": 100, \r\n    \"caducidad\": \"15-12-2026\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "5"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Despensa - Eliminar con cantidad 0",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \r\n    \"cantidad\": 0, \r\n    \"caducidad\": \"2026-11-30\" \r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/despensa/5?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "despensa",
-                "5"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+            {
+              "name": "Ingrediente inexistente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"cantidad\": 100 }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/9999999?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "9999999"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "12 - Colecciones - Consultar",
-      "item": [
-        {
-          "name": "Colección - Consultar por usuario",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/colecciones?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "colecciones"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"cantidad\": 100 }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/despensa/2?idUsuario=99999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "despensa",
+                    "2"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "99999"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         }
       ]
     },
@@ -1205,41 +2097,273 @@
       "name": "10 - Lista compra - Añadir lo que falta de una receta",
       "item": [
         {
-          "name": "Lista compra - Añadir",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"idReceta\": 4,\r\n  \"raciones\": 2\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Lista compra - Añadir",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 4,\r\n  \"raciones\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "listas-compra",
-                "desde-receta"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
+            {
+              "name": "Lista compra - Repetir",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 4,\r\n  \"raciones\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Lista compra - Escalar raciones",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 33,\r\n  \"raciones\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Casos incorrectos",
+          "item": [
+            {
+              "name": "Lista compra - Receta retirada",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 2,\r\n  \"raciones\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Lista compra - Receta inexistente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 999999999,\r\n  \"raciones\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Más de 12 raciones",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idReceta\": 4,\r\n  \"raciones\": 13\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Sin id receta",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"raciones\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/desde-receta?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "desde-receta"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -1247,110 +2371,291 @@
       "name": "11 - Lista compra - Cerrar",
       "item": [
         {
-          "name": "cerrar lista",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"idsComprados\": [1, 2] }",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "cerrar lista",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idsComprados\": [28, 29] }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/2/cerrar",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "2",
+                    "cerrar"
+                  ]
                 }
-              }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos incorrectos",
+          "item": [
+            {
+              "name": "Fila que no es de su lista",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idsComprados\": [999999] }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/2/cerrar",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "2",
+                    "cerrar"
+                  ]
+                }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/listas-compra/2/cerrar",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "listas-compra",
-                "2",
-                "cerrar"
-              ]
+            {
+              "name": "Sin ids comprados",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/2/cerrar",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "2",
+                    "cerrar"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cerrar otra vez",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"idsComprados\": []}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/2/cerrar",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "2",
+                    "cerrar"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "usuario inexistente",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idsComprados\": [1, 2] }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/listas-compra/999999999999/cerrar",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "listas-compra",
+                    "999999999999",
+                    "cerrar"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         }
       ]
     },
     {
-      "name": "15 - Registro semanal",
+      "name": "12 - Colecciones - Consultar",
       "item": [
         {
-          "name": "Consultar registro semanal",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=2&fecha=2026-11-29",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "registros",
-                "semana"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "2"
-                },
-                {
-                  "key": "fecha",
-                  "value": "2026-11-29"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Colección - Consultar por usuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones?idUsuario= 2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": " 2"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Colección vacía y receta retirada",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones?idUsuario= 17",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": " 17"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "16 - Top recetas mas cocinadas y mas guardadas",
-      "item": [
+          ]
+        },
         {
-          "name": "Top recetas populares",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/informes/recetas-populares?desde=2026-11-01&hasta=2026-11-30",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "informes",
-                "recetas-populares"
-              ],
-              "query": [
-                {
-                  "key": "desde",
-                  "value": "2026-11-01"
-                },
-                {
-                  "key": "hasta",
-                  "value": "2026-11-30"
+          "name": "Casos incorrectos",
+          "item": [
+            {
+              "name": "Sin idUsuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones"
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones?idUsuario= 99999999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": " 99999999"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         }
       ]
     },
@@ -1358,34 +2663,242 @@
       "name": "13 - Guardar receta en una colección, creándola sino existe",
       "item": [
         {
-          "name": "Guardar receta en colección",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/colecciones/Favoritas/recetas/33?idUsuario=17",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "colecciones",
-                "Favoritas",
-                "recetas",
-                "33"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "17"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Guardar receta en colección",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Cenas ligeras/recetas/33?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Cenas ligeras",
+                    "recetas",
+                    "33"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Añadir otra receta a la misma colección",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Cenas ligeras/recetas/4?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Cenas ligeras",
+                    "recetas",
+                    "4"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mismo nombre en minúsculas",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/cenas ligeras/recetas/8?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "cenas ligeras",
+                    "recetas",
+                    "8"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Casos incorrectos",
+          "item": [
+            {
+              "name": "Receta repetida en colección",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Cenas ligeras/recetas/33?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Cenas ligeras",
+                    "recetas",
+                    "33"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Receta retirada",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Favoritas/recetas/73?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Favoritas",
+                    "recetas",
+                    "73"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Receta inexistente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Favoritas/recetas/999999?idUsuario=2",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Favoritas",
+                    "recetas",
+                    "999999"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"prueba4\",\r\n  \"descripcion\": \"Versión modificada desde Postman\",\r\n  \"raciones\": 13,\r\n  \"tiempo\": 25,\r\n  \"dificultad\": \"MEDIO\",\r\n  \"ingredientes\": [\r\n    { \"idIngrediente\": 1, \"cantidad\": 6 },\r\n    { \"idIngrediente\": 3, \"cantidad\": 120 }\r\n  ],\r\n  \"pasos\": [\r\n    { \"numero\": 1, \"descripcion\": \"Cocer los garbanzos\" },\r\n    { \"numero\": 2, \"descripcion\": \"Cortar las verduras\" },\r\n    { \"numero\": 3, \"descripcion\": \"Mezclar y servir\" }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/colecciones/Favoritas/recetas/12?idUsuario=999999999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "colecciones",
+                    "Favoritas",
+                    "recetas",
+                    "12"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "999999999"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -1393,40 +2906,646 @@
       "name": "14 - Añadir registro",
       "item": [
         {
-          "name": "Añadir registro",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \r\n    \"idReceta\": 33, \r\n    \"tipo\": \"CENA\", \r\n    \"fecha\": \"2026-11-24T21:00:00\" }",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Añadir registro SIN DESCONTAR",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"DESAYUNO\", \r\n\"fecha\": \"2026-10-01T08:30:00\",\r\n\"descontarDespensa\": false }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "registros"
-              ],
-              "query": [
-                {
-                  "key": "idUsuario",
-                  "value": "15"
+            {
+              "name": "Añadir registro descontando",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"CENA\", \r\n\"fecha\": \"2026-10-01T08:30:00\",\r\n\"descontarDespensa\": true }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
                 }
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Mismo dia y mismo momento",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"CENA\", \r\n\"fecha\": \"2026-10-01T08:30:00\",\r\n\"descontarDespensa\": true }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Fecha futura",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"CENA\", \r\n\"fecha\": \"2030-10-01T08:30:00\",\r\n\"descontarDespensa\": true }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Momento no valido",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"MERIENDA\", \r\n\"fecha\": \"2026-10-01T08:30:00\",\r\n\"descontarDespensa\": true }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Persona inexistente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 99999999, \r\n\"tipo\": \"DESAYUNO\", \r\n\"fecha\": \"2026-10-01T08:30:00\",\r\n\"descontarDespensa\": false }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"idReceta\": 33, \r\n\"tipo\": \"CENA\", \r\n\"fecha\": \"2026-10-02T21:00:00\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros?idUsuario=99999999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "99999999"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "15 - Registro semanal",
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Consultar registro semanal",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=2&fecha=2026-11-29",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "2026-11-29"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Semana de una semana",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=2&fecha=2026-11-29",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "2026-11-29"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Semana sin registras",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=2&fecha=2020-01-01",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "2020-01-01"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Sin idUsuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?fecha=2026-11-29",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2",
+                      "disabled": true
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "2026-11-29"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Usuario inexistente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=999999999",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "999999999"
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "2026-11-29",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Semana sin registras Copy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/registros/semana?idUsuario=2&fecha=24-11-2026",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "registros",
+                    "semana"
+                  ],
+                  "query": [
+                    {
+                      "key": "idUsuario",
+                      "value": "2"
+                    },
+                    {
+                      "key": "fecha",
+                      "value": "24-11-2026"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "16 - Top recetas mas cocinadas y mas guardadas",
+      "item": [
+        {
+          "name": "Casos correctos",
+          "item": [
+            {
+              "name": "Informe de noviembre",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/informes/recetas-populares?desde=2026-11-01&hasta=2026-11-30",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "informes",
+                    "recetas-populares"
+                  ],
+                  "query": [
+                    {
+                      "key": "desde",
+                      "value": "2026-11-01"
+                    },
+                    {
+                      "key": "hasta",
+                      "value": "2026-11-30"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Informe de un rango amplio",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/informes/recetas-populares?desde=2026-01-01&hasta=2026-11-30",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "informes",
+                    "recetas-populares"
+                  ],
+                  "query": [
+                    {
+                      "key": "desde",
+                      "value": "2026-01-01"
+                    },
+                    {
+                      "key": "hasta",
+                      "value": "2026-11-30"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Casos de error",
+          "item": [
+            {
+              "name": "Desde posterior a hasta",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/informes/recetas-populares?desde=2026-11-30&hasta=2026-11-01\t",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "informes",
+                    "recetas-populares"
+                  ],
+                  "query": [
+                    {
+                      "key": "desde",
+                      "value": "2026-11-30"
+                    },
+                    {
+                      "key": "hasta",
+                      "value": "2026-11-01\t"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hasta",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/informes/recetas-populares?hasta=2026-11-30\t",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "informes",
+                    "recetas-populares"
+                  ],
+                  "query": [
+                    {
+                      "key": "hasta",
+                      "value": "2026-11-30\t"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Fecha con formato incorrecto",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/informes/recetas-populares?desde=01-11-2026&hasta=2026-11-30",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "informes",
+                    "recetas-populares"
+                  ],
+                  "query": [
+                    {
+                      "key": "desde",
+                      "value": "01-11-2026"
+                    },
+                    {
+                      "key": "hasta",
+                      "value": "2026-11-30"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }

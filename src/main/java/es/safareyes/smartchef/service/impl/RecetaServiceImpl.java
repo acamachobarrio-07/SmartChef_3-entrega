@@ -73,13 +73,13 @@ public class RecetaServiceImpl implements IRecetaService {
         int tamano = filtros.size() == null ? 10 : filtros.size();
         Pageable pageable = PageRequest.of(pagina, tamano);
 
-        // 1. Filtros que vienen en la petición (pueden ser null)
+        // filtros que vienen en la petición (pueden ser null)
         Boolean vegetariano = filtros.vegetariano();
         Boolean sinGluten = filtros.sinGluten();
         Boolean rapido = filtros.rapido();
         Boolean economico = filtros.economico();
 
-        // 2. RN-03: si se indica usuario, sus preferencias se aplican por defecto
+        // RN-03: si se indica usuario, sus preferencias se aplican por defecto
         //    SOLO en los filtros que la petición no indica
         if (filtros.idUsuario() != null) {
 
@@ -88,7 +88,7 @@ public class RecetaServiceImpl implements IRecetaService {
                             "No existe el usuario con ID: " + filtros.idUsuario()
                     ));
 
-            // Pasamos las preferencias del perfil a un Set de enums
+            // pasamos las preferencias del perfil a un Set de enums
             Set<EPreferenciasTipo> perfil = new HashSet<>();
             for (Preferencias p : usuario.getPreferencias()) {
                 perfil.add(p.getEPreferenciasTipo());
@@ -108,7 +108,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }
         }
 
-        // 3. Rápida = 30 minutos o menos (RN-02)
+        // rápida = 30 minutos o menos (RN-02)
         Integer tiempoMax = filtros.tiempoMax();
         if (Boolean.TRUE.equals(rapido)) {
             tiempoMax = tiempoMax == null
@@ -116,7 +116,7 @@ public class RecetaServiceImpl implements IRecetaService {
                     : Math.min(tiempoMax, 30);
         }
 
-        // 4. Consultar (la consulta ya excluye las retiradas, RN-09)
+        // consultar (la consulta ya excluye las retiradas, RN-09)
         return recetaRepository.buscarConFiltros(
                 tiempoMax,
                 filtros.dificultad(),
@@ -132,14 +132,14 @@ public class RecetaServiceImpl implements IRecetaService {
     @Transactional
     public RecetaResponse crearReceta(GuardarRecetaRequest json) {
 
-        // 1. Comprobar que el nombre no esté repetido
+        // comprobar que el nombre no esté repetido
         if (recetaRepository.existsByNombreIgnoreCase(json.nombre())) {
             throw new ElementoDuplicado(
                     "Ya existe una receta con el nombre: " + json.nombre()
             );
         }
 
-        // 2. Comprobar que los pasos estén numerados sin huecos
+        // comprobar que los pasos estén numerados sin huecos
         List<Integer> numeros = json.pasos().stream()
                 .map(PasoRecetaRequest::numero)
                 .sorted()
@@ -153,7 +153,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }
         }
 
-        // 3. Buscar ingredientes y calcular calorías
+        // buscar ingredientes y calcular calorías
         Set<Integer> idsIngredientes = new HashSet<>();
         List<IngredientesReceta> relaciones = new ArrayList<>();
         BigDecimal caloriasTotales = BigDecimal.ZERO;
@@ -211,10 +211,10 @@ public class RecetaServiceImpl implements IRecetaService {
             relaciones.add(relacion);
         }
 
-        // 4. Convertir DTO a entidad mediante MapStruct
+        // convertir DTO a entidad mediante MapStruct
         Receta receta = recetaMapper.toEntity(json);
 
-        // Calcular calorías por ración
+        // calcular calorías por ración
         int caloriasPorRacion = caloriasTotales
                 .divide(
                         BigDecimal.valueOf(json.raciones()),
@@ -225,17 +225,17 @@ public class RecetaServiceImpl implements IRecetaService {
 
         receta.setCalorias(caloriasPorRacion);
 
-        // Guardar receta
+        // guardar receta
         Receta recetaGuardada = recetaRepository.save(receta);
 
-        // 5. Guardar ingredientes y cantidades
+        // guardar ingredientes y cantidades
         for (IngredientesReceta relacion : relaciones) {
             relacion.setReceta(recetaGuardada);
         }
 
         ingredientesRecetaRepository.saveAll(relaciones);
 
-        // 6. Guardar los pasos
+        // guardar los pasos
         List<Paso> pasos = new ArrayList<>();
 
         for (PasoRecetaRequest item : json.pasos()) {
@@ -252,7 +252,7 @@ public class RecetaServiceImpl implements IRecetaService {
 
         log.info("Receta creada: id={} nombre='{}'", recetaGuardada.getId(), recetaGuardada.getNombre());
 
-        // 7. Convertir entidad a DTO de respuesta
+        // convertir entidad a DTO de respuesta
         return recetaMapper.aResponse(recetaGuardada);
     }
 
@@ -261,7 +261,7 @@ public class RecetaServiceImpl implements IRecetaService {
     public List<BuscarPorIngredientesResponse> buscarPorIngredientes(
             BuscarPorIngredientesRequest datos) {
 
-        // 1. Comprobar cómo queremos buscar
+        // comprobar cómo queremos buscar
         if (datos.idUsuario() != null && datos.idsIngredientes() != null) {
             throw new ReglaNegocioException(
                     "Debes indicar una lista de ingredientes o un usuario, no ambos"
@@ -275,12 +275,12 @@ public class RecetaServiceImpl implements IRecetaService {
             );
         }
 
-        // 2. Por usuario: el cálculo lo hace PostgreSQL (consulta nativa Q3)
+        // por usuario: el cálculo lo hace PostgreSQL (consulta nativa Q3)
         if (datos.idUsuario() != null) {
             return buscarPorDespensa(datos.idUsuario());
         }
 
-        // 3. Por lista de ingredientes: lo calculamos en Java
+        // por lista de ingredientes: lo calculamos en Java
         Set<Integer> disponibles = new HashSet<>(datos.idsIngredientes());
 
         List<Receta> recetas = recetaRepository.buscarRecetasConIngredientes();
@@ -338,17 +338,16 @@ public class RecetaServiceImpl implements IRecetaService {
     }
 
     // Búsqueda por la despensa del usuario (RN-04).
-    // PostgreSQL cuenta, calcula el %, filtra (> 50 %) y ordena; Java solo añade los faltantes.
     private List<BuscarPorIngredientesResponse> buscarPorDespensa(Integer idUsuario) {
 
-        // 1. Comprobar que el usuario existe
+        // comprobar que el usuario existe
         if (!usuarioRepository.existsById(idUsuario)) {
             throw new RelacionNoEncontrada(
                     "No existe el usuario con ID: " + idUsuario
             );
         }
 
-        // 2. Recetas con más del 50 %, ya ordenadas (Q3: GROUP BY + HAVING)
+        // recetas con más del 50 %, ya ordenadas (Q3: GROUP BY + HAVING)
         List<ICoincidenciaDespensaProyeccion> coincidencias =
                 recetaRepository.buscarCoincidenciasDespensa(idUsuario);
 
@@ -358,20 +357,20 @@ public class RecetaServiceImpl implements IRecetaService {
             return resultados;
         }
 
-        // 3. Ingredientes disponibles (cantidad > 0 y no caducados) para saber los que faltan
+        // ingredientes disponibles (cantidad > 0 y no caducados) para saber los que faltan
         Set<Integer> disponibles = new HashSet<>();
         for (Despensa item : despensaRepository.buscarIngredientesDisponibles(
                 idUsuario, LocalDate.now())) {
             disponibles.add(item.getIngrediente().getId());
         }
 
-        // 4. Recetas con sus ingredientes (JOIN FETCH) guardadas por id
+        // recetas con sus ingredientes (JOIN FETCH) guardadas por id
         Map<Integer, Receta> recetasPorId = new HashMap<>();
         for (Receta receta : recetaRepository.buscarRecetasConIngredientes()) {
             recetasPorId.put(receta.getId(), receta);
         }
 
-        // 5. Construir la respuesta en el orden que devuelve PostgreSQL
+        // construir la respuesta
         for (ICoincidenciaDespensaProyeccion fila : coincidencias) {
 
             Receta receta = recetasPorId.get(fila.getIdReceta());
@@ -399,16 +398,16 @@ public class RecetaServiceImpl implements IRecetaService {
     @Override
     public RecetaDetalleResponse obtenerRecetaPorId(Integer id) {
 
-        // 1. Buscar la receta
+        // buscar la receta
         Receta receta = recetaRepository.findById(id)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe una receta con ID: " + id
                 ));
 
-        // 2. Obtener sus ingredientes
+        // obtener sus ingredientes
         List<IngredientesReceta> ingredientes = receta.getIngredientesReceta();
 
-        // 3. Calcular el coste y las preferencias
+        // calcular el coste y las preferencias
         BigDecimal costeTotal = BigDecimal.ZERO;
         boolean vegetariano = true;
         boolean sinGluten = true;
@@ -454,7 +453,7 @@ public class RecetaServiceImpl implements IRecetaService {
             sinGluten = sinGluten && aptoSinGluten;
         }
 
-        // 4. Calcular el coste por ración
+        // calcular el coste por ración
         if (receta.getRaciones() == null || receta.getRaciones() <= 0) {
             throw new ReglaNegocioException(
                     "La receta debe tener al menos una ración"
@@ -475,13 +474,13 @@ public class RecetaServiceImpl implements IRecetaService {
                         .multiply(BigDecimal.valueOf(2.50))
         ) <= 0;
 
-        // 5. Ordenar los pasos
+        // ordenar los pasos
         List<Paso> pasosOrdenados = receta.getPasos()
                 .stream()
                 .sorted(Comparator.comparing(Paso::getNumero))
                 .toList();
 
-        // 6. Convertir los datos mediante MapStruct
+        // convertir los datos mediante MapStruct
         return new RecetaDetalleResponse(
                 recetaMapper.aResponse(receta),
                 costePorRacion,
@@ -500,13 +499,13 @@ public class RecetaServiceImpl implements IRecetaService {
     @Transactional
     public RecetaResponse modificarReceta(Integer id, GuardarRecetaRequest dto) {
 
-        // 1. Buscar la receta
+        // buscar la receta
         Receta receta = recetaRepository.findById(id)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe una receta con ID: " + id
                 ));
 
-        // 2. Comprobar que el nombre no pertenezca a otra receta
+        // comprobar que el nombre no pertenezca a otra receta
         if (!receta.getNombre().equalsIgnoreCase(dto.nombre())
                 && recetaRepository.existsByNombreIgnoreCase(dto.nombre())) {
             throw new ElementoDuplicado(
@@ -514,7 +513,7 @@ public class RecetaServiceImpl implements IRecetaService {
             );
         }
 
-        // 3. Comprobar que los pasos estén numerados sin huecos
+        // comprobar que los pasos estén numerados sin huecos
         List<Integer> numeros = dto.pasos().stream()
                 .map(PasoRecetaRequest::numero)
                 .sorted()
@@ -528,7 +527,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }
         }
 
-        // 4. Preparar ingredientes y recalcular calorías
+        // preparar ingredientes y recalcular calorías
         Set<Integer> idsIngredientes = new HashSet<>();
         List<IngredientesReceta> relaciones = new ArrayList<>();
         BigDecimal caloriasTotales = BigDecimal.ZERO;
@@ -575,31 +574,31 @@ public class RecetaServiceImpl implements IRecetaService {
             relaciones.add(relacion);
         }
 
-        // 5. Modificar los campos simples mediante MapStruct
+        // modificar los campos simples mediante MapStruct
         recetaMapper.actualizarReceta(dto, receta);
 
-        // 6. Calcular calorías por ración
+        // calcular calorías por ración
         int caloriasPorRacion = caloriasTotales.divide(
                 BigDecimal.valueOf(dto.raciones()), 0, RoundingMode.HALF_UP
         ).intValueExact();
         receta.setCalorias(caloriasPorRacion);
 
-        // 7. Guardar referencia a los registros hijos antiguos
+        // guardar referencia a los registros hijos antiguos
         List<IngredientesReceta> ingredientesAntiguos =
                 new ArrayList<>(receta.getIngredientesReceta());
         List<Paso> pasosAntiguos = new ArrayList<>(receta.getPasos());
 
-        // 8. Quitar las relaciones antiguas de las colecciones gestionadas
+        // quitar las relaciones antiguas de las colecciones gestionadas
         receta.getIngredientesReceta().clear();
         receta.getPasos().clear();
 
-        // 9. Eliminarlas explícitamente (no utilizamos orphanRemoval)
+        // eliminarlas explícitamente
         ingredientesRecetaRepository.deleteAll(ingredientesAntiguos);
         pasoRepository.deleteAll(pasosAntiguos);
         ingredientesRecetaRepository.flush();
         pasoRepository.flush();
 
-        // 10. Añadir los hijos nuevos por ambos lados de la relación
+
         receta.getIngredientesReceta().addAll(relaciones);
         for (PasoRecetaRequest item : dto.pasos()) {
             Paso paso = new Paso();
@@ -609,7 +608,7 @@ public class RecetaServiceImpl implements IRecetaService {
             receta.getPasos().add(paso);
         }
 
-        // 11. Guardar la receta; cascade = ALL persiste los nuevos hijos
+        // guardar la receta; cascade = ALL persiste los nuevos hijos
         Receta recetaGuardada = recetaRepository.save(receta);
         log.info("Receta modificada: id={} nombre='{}'", recetaGuardada.getId(), recetaGuardada.getNombre());
         return recetaMapper.aResponse(recetaGuardada);
@@ -621,23 +620,23 @@ public class RecetaServiceImpl implements IRecetaService {
     @Transactional
     public void retirarReceta(Integer id) {
 
-        // 1. Buscar la receta por su ID
+        // buscar la receta por su ID
         Receta receta = recetaRepository.findById(id)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe una receta con ID: " + id
                 ));
 
-        // 2. Comprobar si ya está retirada
+        // comprobar si ya está retirada
         if (Boolean.TRUE.equals(receta.getRetirada())) {
             throw new ReglaNegocioException(
                     "La receta ya está retirada"
             );
         }
 
-        // 3. Cambiar el estado de la receta
+        // cambiar el estado de la receta
         receta.setRetirada(true);
 
-        // 4. Guardar los cambios
+        // guardar los cambios
         recetaRepository.save(receta);
         log.info("Receta retirada (baja lógica): id={}", id);
     }

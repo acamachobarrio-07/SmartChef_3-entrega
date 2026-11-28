@@ -46,7 +46,7 @@ public class ColeccionServiceImpl implements IColeccionService {
         List<FilaColeccionResponse> filas =
                 coleccionRepository.obtenerColeccionesConRecetasPorUsuario(idUsuario);
 
-        // 3. agrupar las filas por colección
+        // agrupar las filas por colección
         //    LinkedHashMap mantiene el orden de la consulta (por nombre)
         Map<Integer, ColeccionResponse> colecciones = new LinkedHashMap<>();
 
@@ -70,7 +70,7 @@ public class ColeccionServiceImpl implements IColeccionService {
             }
         }
 
-        // 4. Devolver las colecciones como lista
+        // devolver las colecciones como lista
         return new ArrayList<>(colecciones.values());
     }
 

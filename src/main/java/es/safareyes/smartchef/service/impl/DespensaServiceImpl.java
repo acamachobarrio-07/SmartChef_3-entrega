@@ -61,33 +61,33 @@ public class DespensaServiceImpl implements IDespensaService {
             Integer idIngrediente,
             ActualizarDespensaRequest datos) {
 
-        // 1. Comprobar que el usuario existe
+        // comprobar que el usuario existe
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe el usuario con ID: " + idUsuario
                 ));
 
-        // 2. Comprobar que el ingrediente existe en el catálogo
+        // comprobar que el ingrediente existe en el catálogo
         Ingredientes ingrediente = ingredientesRepository.findById(idIngrediente)
                 .orElseThrow(() -> new RelacionNoEncontrada(
                         "No existe el ingrediente con ID: " + idIngrediente
                 ));
 
-        // 3. Buscar si el ingrediente ya está en la despensa del usuario
+        // 3. buscar si el ingrediente ya está en la despensa del usuario
         Optional<Despensa> existente =
                 despensaRepository.findByUsuarioIdAndIngredienteId(
                         idUsuario,
                         idIngrediente
                 );
 
-        // 4. Cantidad 0: se elimina de la despensa (si estaba)
+        // cantidad 0: se elimina de la despensa (si estaba)
         if (datos.cantidad().compareTo(BigDecimal.ZERO) == 0) {
             existente.ifPresent(despensaRepository::delete);
             log.info("Ingrediente {} eliminado de la despensa del usuario {}", idIngrediente, idUsuario);
             return null;
         }
 
-        // 5. Si no estaba, creamos una línea nueva para ese usuario e ingrediente
+        // si no estaba, creamos una línea nueva para ese usuario e ingrediente
         Despensa despensa = existente.orElseGet(() -> {
             Despensa nueva = new Despensa();
             nueva.setUsuario(usuario);
@@ -95,11 +95,11 @@ public class DespensaServiceImpl implements IDespensaService {
             return nueva;
         });
 
-        // 6. Guardar la cantidad y la caducidad nuevas
+        // guardar la cantidad y la caducidad nuevas
         despensa.setCantidad(datos.cantidad());
         despensa.setCaducidad(datos.caducidad());
 
-        // 7. Guardar y devolver el DTO
+        // guardar y devolver el DTO
         Despensa guardada = despensaRepository.save(despensa);
         log.info("Despensa del usuario {}: ingrediente {} con cantidad {}", idUsuario, idIngrediente, guardada.getCantidad());
         return despensaMapper.toDto(guardada);
